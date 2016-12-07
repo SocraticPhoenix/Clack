@@ -42,181 +42,163 @@ public class VariableList implements List<Variable> {
     }
 
     @Override
-    public void replaceAll(UnaryOperator<Variable> operator) {
-
-    }
-
-    @Override
-    public void sort(Comparator<? super Variable> c) {
-
-    }
-
-    @Override
-    public Spliterator<Variable> spliterator() {
-        return null;
-    }
-
-    @Override
-    public boolean removeIf(Predicate<? super Variable> filter) {
-        return false;
-    }
-
-    @Override
-    public Stream<Variable> stream() {
-        return null;
-    }
-
-    @Override
-    public Stream<Variable> parallelStream() {
-        return null;
-    }
-
-    @Override
-    public void forEach(Consumer<? super Variable> action) {
-
-    }
-
-    public VariableList() {
-        super();
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-    }
-
-    @Override
     public int size() {
-        return 0;
+        return this.list.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return this.list.isEmpty();
     }
 
     @Override
     public boolean contains(Object o) {
-        return false;
+        return this.list.contains(o);
     }
 
     @Override
     public Iterator<Variable> iterator() {
-        return null;
+        return this.list.iterator();
     }
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        return this.list.toArray();
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        return null;
+        return this.list.toArray(a);
     }
 
     @Override
     public boolean add(Variable variable) {
-        return false;
+        return this.list.add(variable);
     }
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        return this.list.remove(o);
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        return this.list.containsAll(c);
     }
 
     @Override
     public boolean addAll(Collection<? extends Variable> c) {
-        return false;
+        return this.list.addAll(c);
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends Variable> c) {
-        return false;
+        return this.list.addAll(index, c);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        return this.list.removeAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        return this.list.retainAll(c);
+    }
+
+    @Override
+    public void replaceAll(UnaryOperator<Variable> operator) {
+        this.list.replaceAll(operator);
+    }
+
+    @Override
+    public void sort(Comparator<? super Variable> c) {
+        this.list.sort(c);
     }
 
     @Override
     public void clear() {
+        this.list.clear();
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        return this.list.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.list.hashCode();
     }
 
     @Override
     public Variable get(int index) {
-        return null;
+        return this.list.get(index);
     }
 
     @Override
     public Variable set(int index, Variable element) {
-        return null;
+        return this.list.set(index, element);
     }
 
     @Override
     public void add(int index, Variable element) {
-
+        this.list.add(index, element);
     }
 
     @Override
     public Variable remove(int index) {
-        return null;
+        return this.list.remove(index);
     }
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+        return this.list.indexOf(o);
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        return this.list.lastIndexOf(o);
     }
 
     @Override
     public ListIterator<Variable> listIterator() {
-        return null;
+        return this.list.listIterator();
     }
 
     @Override
     public ListIterator<Variable> listIterator(int index) {
-        return null;
+        return this.list.listIterator(index);
     }
 
     @Override
     public List<Variable> subList(int fromIndex, int toIndex) {
-        return null;
+        return this.list.subList(fromIndex, toIndex);
     }
+
+    @Override
+    public Spliterator<Variable> spliterator() {
+        return this.list.spliterator();
+    }
+
+    @Override
+    public boolean removeIf(Predicate<? super Variable> filter) {
+        return this.list.removeIf(filter);
+    }
+
+    @Override
+    public Stream<Variable> stream() {
+        return this.list.stream();
+    }
+
+    @Override
+    public Stream<Variable> parallelStream() {
+        return this.list.parallelStream();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Variable> action) {
+        this.list.forEach(action);
+    }
+
 }
