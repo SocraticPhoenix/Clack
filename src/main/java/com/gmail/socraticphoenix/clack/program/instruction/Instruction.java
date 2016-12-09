@@ -21,5 +21,21 @@
  */
 package com.gmail.socraticphoenix.clack.program.instruction;
 
+import com.gmail.socraticphoenix.clack.program.Program;
+import com.gmail.socraticphoenix.clack.program.memory.Memory;
+import com.gmail.socraticphoenix.clack.program.memory.Variable;
+
+import java.util.List;
+import java.util.Map;
+
 public interface Instruction {
+
+    String name();
+
+    String doc();
+
+    List<Argument> arguments(Memory memory, Program program);
+
+    void exec(Memory memory, Program program, Map<String, Variable> arguments);
+
 }

@@ -22,10 +22,20 @@
 package com.gmail.socraticphoenix.clack.ast;
 
 import com.gmail.socraticphoenix.clack.program.Program;
+import com.gmail.socraticphoenix.clack.program.instruction.InstructionRegistry;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
+import com.gmail.socraticphoenix.clack.program.memory.Variable;
 
-public interface Node {
+public class ConstantNode implements Node {
+    private String name;
 
-    void exec(Memory memory, Program program);
+    public ConstantNode(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void exec(Memory memory, Program program) {
+        memory.push(Variable.of(InstructionRegistry.constant(this.name)));
+    }
 
 }

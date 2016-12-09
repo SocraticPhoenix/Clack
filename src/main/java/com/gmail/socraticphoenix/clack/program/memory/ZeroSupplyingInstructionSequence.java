@@ -19,13 +19,21 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.clack.ast;
+package com.gmail.socraticphoenix.clack.program.memory;
 
 import com.gmail.socraticphoenix.clack.program.Program;
-import com.gmail.socraticphoenix.clack.program.memory.Memory;
+import com.gmail.socraticphoenix.clack.program.instruction.InstructionSequence;
 
-public interface Node {
+import java.math.BigDecimal;
 
-    void exec(Memory memory, Program program);
+public class ZeroSupplyingInstructionSequence implements InstructionSequence {
+
+    @Override
+    public void exec(Memory memory, Program program) {
+        if(memory.current().isEmpty()) {
+            memory.push(Variable.of(BigDecimal.ZERO));
+        }
+    }
+
 
 }

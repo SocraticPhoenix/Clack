@@ -19,12 +19,12 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.clack.ast;
+package com.gmail.socraticphoenix.clack.program.instruction;
 
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 
-public interface Node {
+public interface InstructionSequence {
 
     void exec(Memory memory, Program program);
 

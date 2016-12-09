@@ -21,5 +21,77 @@
  */
 package com.gmail.socraticphoenix.clack.program.instruction;
 
-public interface Argument {
+import com.gmail.socraticphoenix.clack.collection.VariableList;
+import com.gmail.socraticphoenix.clack.program.memory.Variable;
+import com.gmail.socraticphoenix.nebula.collection.Items;
+
+import java.math.BigDecimal;
+import java.util.function.Predicate;
+
+public class Argument {
+    private String name;
+    private boolean prefersWell;
+    private String desc;
+    private Predicate<Variable> test;
+
+
+    public Argument(String name, String desc, boolean prefersWell, Predicate<Variable> test) {
+        this.name = name;
+        this.prefersWell = prefersWell;
+        this.test = test;
+        this.desc = desc;
+    }
+
+    public Argument(String name, String desc, Predicate<Variable> test) {
+        this(name, desc, false, test);
+    }
+
+    public static Predicate<Variable> type(Class... types) {
+        return o -> Items.contains(o.type(), types);
+    }
+
+    public static Predicate<Variable> list(Predicate<Variable> test) {
+        return Argument.type(VariableList.class).and(v -> v.get(VariableList.class).get().stream().allMatch(test));
+    }
+
+    public static Predicate<Variable> greater(BigDecimal num) {
+        return Argument.type(BigDecimal.class).and(v -> v.get(BigDecimal.class).get().compareTo(num) > 0);
+    }
+
+    public static Predicate<Variable> less(BigDecimal num) {
+        return Argument.type(BigDecimal.class).and(v -> v.get(BigDecimal.class).get().compareTo(num) < 0);
+    }
+
+    public static Predicate<Variable> greaterEqual(BigDecimal num) {
+        return Argument.type(BigDecimal.class).and(v -> v.get(BigDecimal.class).get().compareTo(num) >= 0);
+    }
+
+    public static Predicate<Variable> lessEqual(BigDecimal num) {
+        return Argument.type(BigDecimal.class).and(v -> v.get(BigDecimal.class).get().compareTo(num) <= 0);
+    }
+
+    public static Predicate<Variable> inRange(BigDecimal min, BigDecimal max) {
+        return Argument.greaterEqual(min).and(Argument.lessEqual(max));
+    }
+
+    public String name() {
+        return this.name;
+    }
+
+    public boolean prefersWell() {
+        return this.prefersWell;
+    }
+
+
+    public String getDesc() {
+        return this.desc;
+    }
+
+    public Predicate<Variable> getTest() {
+        return this.test;
+    }
+
+    public String getName() {
+        return this.name;
+    }
 }

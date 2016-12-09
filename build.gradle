@@ -23,13 +23,13 @@ apply plugin : 'net.sf.gapt'
 //End Plugins
 
 //Program Specific Variables (Fill these in)
-def programVersion = "0.0.0"
+def programVersion = "0.0.3"
 def programGroup = "com.gmail.socraticphoenix"
 def programName = "Clack"
 def repoName = "Main"
 def repoPackageName = "java-apps"
 def programLicense = "MIT"
-def versionControlURL = ""
+def versionControlURL = "https://github.com/SocraticPhoenix/Clack.git"
 //End Variables
 
 //Gradle Variables
@@ -74,6 +74,12 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.2'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+javadoc.options.encoding = 'UTF-8'
 //End Tasks
 
 //Jar Configuration

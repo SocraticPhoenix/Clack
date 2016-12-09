@@ -24,8 +24,16 @@ package com.gmail.socraticphoenix.clack.ast;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 
-public interface Node {
+public class FunctionNode implements Node {
+    private char id;
 
-    void exec(Memory memory, Program program);
+    public FunctionNode(char id) {
+        this.id = id;
+    }
+
+    @Override
+    public void exec(Memory memory, Program program) {
+        program.callFunction(this.id);
+    }
 
 }

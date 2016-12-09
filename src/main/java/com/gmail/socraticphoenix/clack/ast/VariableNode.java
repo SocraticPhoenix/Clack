@@ -24,8 +24,16 @@ package com.gmail.socraticphoenix.clack.ast;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 
-public interface Node {
+public class VariableNode implements Node {
+    private int id;
 
-    void exec(Memory memory, Program program);
+    public VariableNode(char id) {
+        this.id = Memory.getVariableIndex(id);
+    }
+
+    @Override
+    public void exec(Memory memory, Program program) {
+        memory.push(memory.get(this.id));
+    }
 
 }

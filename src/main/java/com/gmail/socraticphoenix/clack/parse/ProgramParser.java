@@ -21,5 +21,31 @@
  */
 package com.gmail.socraticphoenix.clack.parse;
 
+import com.gmail.socraticphoenix.clack.ast.SequenceNode;
+
+import java.util.List;
+import java.util.Stack;
+
 public class ProgramParser {
+    private Stack<Mode> mode;
+    private Stack<Token.Type> brackets;
+    private List<Token> tokens;
+    private int index;
+
+    private List<SequenceNode> functions;
+
+    public ProgramParser(List<Token> tokens) {
+        this.tokens = tokens;
+        this.mode = new Stack<>();
+        this.brackets = new Stack<>();
+        this.index = 0;
+    }
+
+    public enum Mode {
+        STRING,
+        ARRAY,
+        NUMBER,
+        NORMAL
+    }
+
 }

@@ -19,13 +19,58 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.clack.ast;
+package com.gmail.socraticphoenix.clack.parse;
 
-import com.gmail.socraticphoenix.clack.program.Program;
-import com.gmail.socraticphoenix.clack.program.memory.Memory;
+public class Token {
+    private char content;
+    private Type type;
 
-public interface Node {
+    public Token(char content, Type type) {
+        this.content = content;
+        this.type = type;
+    }
 
-    void exec(Memory memory, Program program);
+    public char getContent() {
+        return this.content;
+    }
+
+    public Type getType() {
+        return this.type;
+    }
+
+    public enum Type {
+        VARIABLE,
+        CONSTANT,
+        CONSTANT_LENGTH_PRECURSOR,
+        STACK,
+        FUNCTION,
+        WHITESPACE,
+        INSTRUCTION,
+        INSTRUCTION_LENGTH_PRECURSOR,
+        SYNTAX_ESCAPE_CHAR,
+        SYNTAX_DIGIT,
+        SYNTAX_NUM_PART,
+        SYNTAX_LPAREN,
+        SYNTAX_RPAREN,
+        SYNTAX_LBRACKET,
+        SYNTAX_RBRACKET,
+        SYNTAX_LBRACE,
+        SYNTAX_RBRACE,
+        SYNTAX_LFLOOR,
+        SYNTAX_RFLOOR,
+        SYNTAX_LCEIL,
+        SYNTAX_RCEIL,
+        SYNTAX_SEP,
+        SYNTAX_STRING_START,
+        SYNTAX_STRING_END,
+        SYNTAX_STRING_END_START,
+        SYNTAX_INCREASE_ARRAY_DEPTH,
+        SYNTAX_DECREASE_ARRAY_DEPTH,
+        SYNTAX_ARRAY_SEP,
+        SYNTAX_VAR_SET,
+        SYNTAX_END_FUNCTION,
+        SYNTAX_STRING_CONTENT
+
+    }
 
 }

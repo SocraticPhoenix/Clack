@@ -21,73 +21,44 @@
  */
 package com.gmail.socraticphoenix.clack.program.memory;
 
-import com.gmail.socraticphoenix.nebula.math.big.precision.BigFraction;
+import com.gmail.socraticphoenix.clack.parse.TokenGroups;
 
-import java.math.BigInteger;
 import java.util.Stack;
 
-public class Memory {
-    private static final String varIds = "αβγδεζηθικλμνξοπρςστυφχψω";
-    private static final String stackIds = "abcdefghijklmnopqrstuvwxyz";
+public interface Memory {
 
-    private Variable[] variables;
-    private Stack<Variable>[] stacks;
-    private Stack<Variable> current;
+    Stack<Variable> current();
 
-    public Memory() {
-        this.variables = new Variable[26];
-        this.stacks = new Stack[26];
-        for (int i = 0; i < this.stacks.length; i++) {
-            this.stacks[i] = new Stack<>();
-        }
+    Variable popWellValue();
 
-        for (int i = 0; i < this.variables.length; i++) {
-            this.variables[i] = new Variable();
-        }
+    Variable peekWellValue();
+
+    Variable get(int index);
+
+    void setStack(int index);
+
+    default Variable pop() {
+        return this.current().isEmpty() ? this.popWellValue() : this.current().pop();
     }
 
-    public static boolean isVariableId(char c) {
-        return Memory.varIds.indexOf(c) != -1;
+    default void push(Variable variable) {
+        this.current().push(variable);
     }
 
-    public static boolean isStackId(char c) {
-        return Memory.stackIds.indexOf(c) != -1;
+    static boolean isStackId(char c) {
+        return TokenGroups.STACKS.indexOf(c) != -1;
     }
 
-    public static int variableIndex(char c) {
-        return Memory.varIds.indexOf(c);
+    static boolean isVariableId(char c) {
+        return TokenGroups.VARIABLES.indexOf(c) != -1;
     }
 
-    public static int stackIndex(char c) {
-        return Memory.stackIds.indexOf(c);
+    static int getStackIndex(char c) {
+        return TokenGroups.STACKS.indexOf(c);
     }
 
-    public Variable get(int index) {
-        return this.variables[index];
-    }
-
-    public void set(int index, Object val) {
-        this.variables[index].set(val);
-    }
-
-    public void setStack(int index) {
-        this.current = this.stacks[index];
-    }
-
-    public Variable pop() {
-        return this.current.isEmpty() ? Variable.of(new BigFraction(BigInteger.ZERO, BigInteger.ONE)) : this.current.pop();
-    }
-
-    public Variable peek() {
-        return this.current.isEmpty() ? Variable.of(new BigFraction(BigInteger.ZERO, BigInteger.ONE)) : this.current.peek();
-    }
-
-    public boolean isEmpty() {
-        return this.current.isEmpty();
-    }
-
-    public void push(Variable variable) {
-        this.current.push(variable);
+    static int getVariableIndex(char c) {
+        return TokenGroups.VARIABLES.indexOf(c);
     }
 
 }

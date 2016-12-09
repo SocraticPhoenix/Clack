@@ -19,13 +19,22 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.clack.ast;
 
-import com.gmail.socraticphoenix.clack.program.Program;
-import com.gmail.socraticphoenix.clack.program.memory.Memory;
+import com.gmail.socraticphoenix.clack.parse.ProgramTokenizer;
+import com.gmail.socraticphoenix.clack.parse.Token;
+import com.gmail.socraticphoenix.clack.parse.TokenGroups;
 
-public interface Node {
+public class QuickTest {
+    public static void main(String[] args) {
+        System.out.println(TokenGroups.ALL.codePoints().count());
 
-    void exec(Memory memory, Program program);
+        ProgramTokenizer tokenizer = new ProgramTokenizer();
+        tokenizer.tokenize("abc[3, 4, 2: 43, 11; 12]\"hello»world»george\\\\»«ẇẋẏż!@#%^");
+        for(Token token : tokenizer.finish()) {
+            System.out.println(token.getContent() + " : " + token.getType());
+        }
+    }
+
+
 
 }

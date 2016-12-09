@@ -19,13 +19,28 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.clack.ast;
+package com.gmail.socraticphoenix.clack.program;
 
-import com.gmail.socraticphoenix.clack.program.Program;
-import com.gmail.socraticphoenix.clack.program.memory.Memory;
+import com.gmail.socraticphoenix.clack.program.memory.Variable;
 
-public interface Node {
+import java.util.function.Predicate;
 
-    void exec(Memory memory, Program program);
+public class Program {
+
+    public boolean isRunning() {
+        return false;
+    }
+
+    public void error(String s) {
+
+    }
+
+    public void callFunction(char id) {
+
+    }
+
+    public Variable input(Predicate<Variable> form) {
+        return null;
+    }
 
 }

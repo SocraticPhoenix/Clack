@@ -23,9 +23,18 @@ package com.gmail.socraticphoenix.clack.ast;
 
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
+import com.gmail.socraticphoenix.clack.program.memory.Variable;
 
-public interface Node {
+public class PushNode implements Node {
+    private Object obj;
 
-    void exec(Memory memory, Program program);
+    public PushNode(Object obj) {
+        this.obj = obj;
+    }
+
+    @Override
+    public void exec(Memory memory, Program program) {
+        memory.push(Variable.of(this.obj));
+    }
 
 }

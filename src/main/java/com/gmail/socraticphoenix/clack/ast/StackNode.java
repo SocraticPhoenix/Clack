@@ -24,8 +24,16 @@ package com.gmail.socraticphoenix.clack.ast;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 
-public interface Node {
+public class StackNode implements Node {
+    private int id;
 
-    void exec(Memory memory, Program program);
+    public StackNode(char id) {
+        this.id = Memory.getStackIndex(id);
+    }
+
+    @Override
+    public void exec(Memory memory, Program program) {
+        memory.setStack(this.id);
+    }
 
 }

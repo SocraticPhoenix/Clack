@@ -24,8 +24,22 @@ package com.gmail.socraticphoenix.clack.ast;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 
-public interface Node {
+import java.util.Iterator;
+import java.util.List;
 
-    void exec(Memory memory, Program program);
+public class SequenceNode implements Node {
+    private List<Node> nodes;
 
+    public SequenceNode(List<Node> nodes) {
+        this.nodes = nodes;
+    }
+
+
+    @Override
+    public void exec(Memory memory, Program program) {
+        Iterator<Node> iterator = this.nodes.iterator();
+        while (iterator.hasNext() && program.isRunning()) {
+            iterator.next().exec(memory, program);
+        }
+    }
 }
