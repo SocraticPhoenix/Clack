@@ -20,21 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import com.gmail.socraticphoenix.clack.parse.ProgramTokenizer;
-import com.gmail.socraticphoenix.clack.parse.Token;
-import com.gmail.socraticphoenix.clack.parse.TokenGroups;
+import com.gmail.socraticphoenix.clack.app.gui.ClackUI;
 
 public class QuickTest {
+
     public static void main(String[] args) {
-        System.out.println(TokenGroups.ALL.codePoints().count());
-
-        ProgramTokenizer tokenizer = new ProgramTokenizer();
-        tokenizer.tokenize("abc[3, 4, 2: 43, 11; 12]\"hello»world»george\\\\»«ẇẋẏż!@#%^");
-        for(Token token : tokenizer.finish()) {
-            System.out.println(token.getContent() + " : " + token.getType());
-        }
+        new ClackUI().display();
     }
-
-
 
 }

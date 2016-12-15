@@ -26,14 +26,21 @@ import com.gmail.socraticphoenix.clack.program.memory.Memory;
 
 public class StackNode implements Node {
     private int id;
+    private char c;
 
     public StackNode(char id) {
         this.id = Memory.getStackIndex(id);
+        this.c = id;
     }
 
     @Override
     public void exec(Memory memory, Program program) {
         memory.setStack(this.id);
+    }
+
+    @Override
+    public String write() {
+        return String.valueOf(this.c);
     }
 
 }

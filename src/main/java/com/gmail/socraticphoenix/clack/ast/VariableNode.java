@@ -25,15 +25,26 @@ import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 
 public class VariableNode implements Node {
-    private int id;
+    protected int id;
+    private char c;
 
     public VariableNode(char id) {
         this.id = Memory.getVariableIndex(id);
+        this.c = id;
     }
 
     @Override
     public void exec(Memory memory, Program program) {
-        memory.push(memory.get(this.id));
+        if(memory.isPresent(this.id)) {
+            memory.push(memory.get(this.id));
+        } else {
+            memory.set(this.id, memory.pop().val());
+        }
+    }
+
+    @Override
+    public String write() {
+        return String.valueOf(this.c);
     }
 
 }

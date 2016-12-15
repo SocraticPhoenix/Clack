@@ -57,6 +57,7 @@ repositories {
 dependencies {
     shadow "com.gmail.socraticphoenix:NebulaAPI:0.0.9"
     shadow "com.gmail.socraticphoenix:JEncoding:0.0.1"
+    shadow "com.intellij:forms_rt:7.0.3"
 }
 //End Repositories and Dependencies
 
@@ -84,10 +85,7 @@ javadoc.options.encoding = 'UTF-8'
 
 //Jar Configuration
 jar {
-    configurations.shadow.each { slice ->
-        from(project.zipTree(slice)) {
-        }
-    }
+    from configurations.shadow.collect {(it.isDirectory() ? fileTree(it) : zipTree(it)).matching {}}
 }
 //End Jar Configuration
 

@@ -49,7 +49,7 @@ public class FunctionMemory implements Memory {
             this.stacks[i] = new StackMemory(this.program);
         }
 
-        this.currentStack = this.stacks[0];
+        this.currentStack = parent;
     }
 
     public StackMemory getCurrentStack() {
@@ -73,7 +73,17 @@ public class FunctionMemory implements Memory {
 
     @Override
     public Variable get(int index) {
-        return this.variables[index];
+        return this.variables[index].copy();
+    }
+
+    @Override
+    public void set(int index, Object var) {
+        this.variables[index].set(var);
+    }
+
+    @Override
+    public boolean isPresent(int index) {
+        return this.variables[index].isPresent();
     }
 
     @Override

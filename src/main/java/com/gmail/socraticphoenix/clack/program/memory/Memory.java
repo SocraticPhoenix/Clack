@@ -35,6 +35,10 @@ public interface Memory {
 
     Variable get(int index);
 
+    void set(int index, Object var);
+
+    boolean isPresent(int index);
+
     void setStack(int index);
 
     default Variable pop() {

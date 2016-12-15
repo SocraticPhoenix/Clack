@@ -19,9 +19,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.clack.collection;
-
-import com.gmail.socraticphoenix.clack.program.memory.Variable;
+package com.gmail.socraticphoenix.clack.program.memory;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -199,6 +197,11 @@ public class VariableList implements List<Variable> {
     @Override
     public void forEach(Consumer<? super Variable> action) {
         this.list.forEach(action);
+    }
+
+    @Override
+    public String toString() {
+        return this.list.toString();
     }
 
 }

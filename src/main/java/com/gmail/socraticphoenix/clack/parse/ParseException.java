@@ -19,27 +19,27 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.clack.program.instruction;
+package com.gmail.socraticphoenix.clack.parse;
 
-import com.gmail.socraticphoenix.clack.program.Program;
-import com.gmail.socraticphoenix.clack.program.memory.Memory;
-import com.gmail.socraticphoenix.clack.program.memory.Variable;
+public class ParseException extends Exception {
 
-import java.util.List;
-import java.util.Map;
+    public ParseException() {
 
-public interface Instruction {
+    }
 
-    int danger();
+    public ParseException(String message) {
+        super(message);
+    }
 
-    String name();
+    public ParseException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-    String canonical();
+    public ParseException(Throwable cause) {
+        super(cause);
+    }
 
-    String doc();
-
-    List<Argument> arguments(Memory memory, Program program);
-
-    void exec(Memory memory, Program program, Map<String, Variable> arguments);
-
+    public ParseException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

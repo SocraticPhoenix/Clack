@@ -1,0 +1,7 @@
+a = top value of stack
+b = second value of stack
+n = number (usually a or b)
+s = string (usually a or b)
+l = list (usually a or b)
+x = a or b, not mentioned
+t# = stack element number # (t1 = a, t2 = b, t3 = third value)

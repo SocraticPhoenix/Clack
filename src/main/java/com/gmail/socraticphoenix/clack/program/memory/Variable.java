@@ -21,8 +21,15 @@
  */
 package com.gmail.socraticphoenix.clack.program.memory;
 
+import com.gmail.socraticphoenix.clack.parse.ParseException;
+import com.gmail.socraticphoenix.clack.parse.ProgramParser;
+import com.gmail.socraticphoenix.clack.parse.ProgramTokenizer;
+import com.gmail.socraticphoenix.nebula.math.Calculations;
 import com.gmail.socraticphoenix.nebula.reflection.Reflections;
+import com.gmail.socraticphoenix.nebula.string.Strings;
 
+import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Variable {
@@ -38,6 +45,28 @@ public class Variable {
         return var;
     }
 
+    public static Variable parse(String s) {
+        ProgramTokenizer tokenizer = new ProgramTokenizer();
+        tokenizer.tokenize(s);
+        ProgramParser parser = new ProgramParser(tokenizer.finish());
+
+        Variable var;
+        if(!parser.valNext()) {
+            var = Variable.of(Strings.deEscape(s));
+        } else {
+            try {
+                var = Variable.of(parser.nextVal().getObj());
+            } catch (ParseException e) {
+                var = Variable.of(Strings.deEscape(s));
+            }
+        }
+        return var;
+    }
+
+    public Object val() {
+        return this.val;
+    }
+
     public void set(Object val) {
         this.val = val;
     }
@@ -46,16 +75,33 @@ public class Variable {
         return this.val != null;
     }
 
+    public Variable copy() {
+        return Variable.of(this.val);
+    }
+
     public Class type() {
         return this.val == null ? Void.class : this.val.getClass();
     }
 
     public <T> Optional<T> get(Class<T> type) {
         try {
+            if(this.val instanceof String && type == BigDecimal.class && Calculations.isBigDecimal((String) this.val)) {
+                return Optional.of((T) new BigDecimal((String) this.val));
+            } else if (this.val instanceof BigDecimal && type == String.class) {
+                return Optional.of((T) String.valueOf(this.val));
+            }
             return Optional.ofNullable(Reflections.deepCast(type, this.val));
         } catch (ClassCastException e) {
             return Optional.empty();
         }
+    }
+
+    public String toString() {
+        return String.valueOf(this.val);
+    }
+
+    public boolean equals(Object object) {
+        return object instanceof Variable && Objects.equals(this.val, ((Variable) object).val);
     }
 
 }

@@ -28,4 +28,6 @@ public interface Node {
 
     void exec(Memory memory, Program program);
 
+    String write();
+
 }

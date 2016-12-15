@@ -105,7 +105,17 @@ public class StackMemory implements Memory {
 
     @Override
     public Variable get(int index) {
-        return this.variables[index];
+        return this.variables[index].copy();
+    }
+
+    @Override
+    public void set(int index, Object var) {
+        this.variables[index].set(var);
+    }
+
+    @Override
+    public boolean isPresent(int index) {
+        return this.variables[index].isPresent();
     }
 
     @Override

@@ -24,7 +24,7 @@ package com.gmail.socraticphoenix.clack.ast;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.instruction.Argument;
 import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
-import com.gmail.socraticphoenix.clack.program.instruction.InstructionRegistry;
+import com.gmail.socraticphoenix.clack.program.ClackRegistry;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
 
@@ -36,27 +36,57 @@ import java.util.Stack;
 
 public class InstructionNode implements Node {
     private Instruction instruction;
+    private String name;
 
     public InstructionNode(String name) {
-        this.instruction = InstructionRegistry.instruction(name);
+        this.instruction = ClackRegistry.instruction(name);
+        this.name = name;
+    }
+
+    public InstructionNode(Instruction instruction) {
+        this.instruction = instruction;
+        this.name = instruction.name();
+    }
+
+    public Instruction getInstruction() {
+        return this.instruction;
     }
 
     @Override
     public void exec(Memory memory, Program program) {
+        if (!((10 - program.getSecurity()) >= this.instruction.danger())) {
+            program.error("Security level is " + program.getSecurity() + ", which prevents \"" + this.instruction.canonical() + "\" from executing due to its danger level of " + this.instruction.danger());
+            return;
+        }
+
         Map<String, Variable> variables = new HashMap<>();
         List<Argument> arguments = this.instruction.arguments(memory, program);
         Stack<Variable> current = memory.current();
 
+        Stack<Variable> popped = new Stack<>();
+
         while (!current.isEmpty() && !arguments.isEmpty() && program.isRunning()) {
-            Variable var = current.peek();
+            Variable var = current.pop();
+            boolean found = false;
             for (int i = 0; i < arguments.size(); i++) {
                 Argument argument = arguments.get(i);
                 if(argument.getTest().test(var)) {
+                    found = true;
                     variables.put(argument.getName(), var);
-                    variables.remove(i);
+                    arguments.remove(i);
+                    if(!argument.pops()) {
+                        popped.push(var);
+                    }
                     break;
                 }
             }
+            if(!found) {
+                popped.push(var);
+            }
+        }
+
+        while (!popped.isEmpty()) {
+            current.push(popped.pop());
         }
 
         Iterator<Argument> iterator = arguments.iterator();
@@ -67,14 +97,19 @@ public class InstructionNode implements Node {
                 if(argument.getTest().test(var)) {
                     variables.put(argument.getName(), memory.popWellValue());
                 } else {
-                    variables.put(argument.getName(), program.input(argument.getTest()));
+                    variables.put(argument.getName(), program.input(argument.getTest(), argument.type()));
                 }
             } else {
-                variables.put(argument.getName(), program.input(argument.getTest()));
+                variables.put(argument.getName(), program.input(argument.getTest(), argument.type()));
             }
         }
 
         this.instruction.exec(memory, program, variables);
+    }
+
+    @Override
+    public String write() {
+        return this.name;
     }
 
 }

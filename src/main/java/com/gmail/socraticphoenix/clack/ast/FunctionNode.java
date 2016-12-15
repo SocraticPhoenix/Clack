@@ -36,4 +36,9 @@ public class FunctionNode implements Node {
         program.callFunction(this.id);
     }
 
+    @Override
+    public String write() {
+        return String.valueOf(this.id);
+    }
+
 }

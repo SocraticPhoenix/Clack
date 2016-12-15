@@ -21,7 +21,7 @@
  */
 package com.gmail.socraticphoenix.clack.program.instruction;
 
-import com.gmail.socraticphoenix.clack.collection.VariableList;
+import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
 import com.gmail.socraticphoenix.nebula.collection.Items;
 
@@ -31,19 +31,31 @@ import java.util.function.Predicate;
 public class Argument {
     private String name;
     private boolean prefersWell;
+    private boolean pops;
     private String desc;
+    private String type;
     private Predicate<Variable> test;
 
 
-    public Argument(String name, String desc, boolean prefersWell, Predicate<Variable> test) {
+    public Argument(String name, String desc, String type, boolean prefersWell, boolean pops, Predicate<Variable> test) {
         this.name = name;
         this.prefersWell = prefersWell;
         this.test = test;
         this.desc = desc;
+        this.type = type;
+        this.pops = pops;
     }
 
-    public Argument(String name, String desc, Predicate<Variable> test) {
-        this(name, desc, false, test);
+    public Argument(String name, String desc, String type, Predicate<Variable> test) {
+        this(name, desc, type, false, true, test);
+    }
+
+    public static Argument of(String name, String desc, String type, boolean prefersWell, boolean pops, Predicate<Variable> test) {
+        return new Argument(name, desc, type, prefersWell, pops, test);
+    }
+
+    public static Argument any(String name, String desc, String type, boolean prefersWell, boolean pops) {
+        return new Argument(name, desc, type, prefersWell, pops, v -> true);
     }
 
     public static Predicate<Variable> type(Class... types) {
@@ -74,8 +86,16 @@ public class Argument {
         return Argument.greaterEqual(min).and(Argument.lessEqual(max));
     }
 
+    public boolean pops() {
+        return this.pops;
+    }
+
     public String name() {
         return this.name;
+    }
+
+    public String type() {
+        return this.type;
     }
 
     public boolean prefersWell() {

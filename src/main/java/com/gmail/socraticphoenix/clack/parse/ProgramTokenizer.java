@@ -60,7 +60,6 @@ public class ProgramTokenizer {
     private static int stringEndStart = TokenGroups.index('»');
     private static int increaseArrayDepth = TokenGroups.index(':');
     private static int decreaseArrayDepth = TokenGroups.index(';');
-    private static int arraySep = TokenGroups.index(',');
     private static int varSet = TokenGroups.index('=');
     private static int funcSep = TokenGroups.index('\n');
 
@@ -140,7 +139,7 @@ public class ProgramTokenizer {
         return temp;
     }
 
-    private Token.Type toType(char c, int index) {
+    public static Token.Type toType(char c, int index) {
         if (r(index, varRange)) {
             return VARIABLE;
         } else if (r(index, constRange)) {
@@ -195,8 +194,6 @@ public class ProgramTokenizer {
             return SYNTAX_INCREASE_ARRAY_DEPTH;
         } else if (index == decreaseArrayDepth) {
             return SYNTAX_DECREASE_ARRAY_DEPTH;
-        } else if (index == arraySep) {
-            return SYNTAX_ARRAY_SEP;
         } else if (index == varSet) {
             return SYNTAX_VAR_SET;
         } else if (index == funcSep) {
