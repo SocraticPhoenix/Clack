@@ -33,6 +33,8 @@ public class FunctionNode implements Node {
 
     @Override
     public void exec(Memory memory, Program program) {
+        program.waitForGo();
+        program.visit(this);
         program.callFunction(this.id);
     }
 

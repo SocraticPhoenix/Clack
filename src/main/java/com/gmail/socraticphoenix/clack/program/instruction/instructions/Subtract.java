@@ -85,4 +85,9 @@ public class Subtract implements Instruction {
         memory.push(Subtract.sub(a, b, program));
     }
 
+    @Override
+    public String operation() {
+        return "${a} - ${b} = ${res}";
+    }
+
 }

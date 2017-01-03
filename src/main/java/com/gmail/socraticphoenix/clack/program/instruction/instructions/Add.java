@@ -21,12 +21,12 @@
  */
 package com.gmail.socraticphoenix.clack.program.instruction.instructions;
 
-import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.instruction.Argument;
 import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
+import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.nebula.collection.Items;
 
 import java.math.BigDecimal;
@@ -82,6 +82,11 @@ public class Add implements Instruction {
         Variable a = arguments.get("a");
         Variable b = arguments.get("b");
         memory.push(Add.add(a, b, program));
+    }
+
+    @Override
+    public String operation() {
+        return "${a} + ${b} = ${res}";
     }
 
 }

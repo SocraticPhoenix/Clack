@@ -32,6 +32,7 @@ import com.gmail.socraticphoenix.nebula.collection.Items;
 import com.gmail.socraticphoenix.nebula.string.Strings;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,8 @@ public class SequenceNode implements Node, InstructionSequence {
 
     @Override
     public void exec(Memory memory, Program program) {
+        program.waitForGo();
+        program.visit(this);
         Iterator<Node> iterator = this.nodes.iterator();
         while (iterator.hasNext() && program.isRunning()) {
             iterator.next().exec(memory, program);
@@ -57,6 +60,8 @@ public class SequenceNode implements Node, InstructionSequence {
         StringBuilder builder = new StringBuilder();
         Stack<Node> iterator = new Stack<>();
         iterator.addAll(Items.reversed(this.nodes));
+        List<String> strings = new ArrayList<>();
+        boolean string = false;
         while (!iterator.isEmpty()) {
             Node n = iterator.pop();
             if(n instanceof PushNode) {
@@ -65,7 +70,7 @@ public class SequenceNode implements Node, InstructionSequence {
                     char left = '{';
                     char right = '}';
                     if(!iterator.isEmpty()) {
-                        Node peek = iterator.peek();
+                        Node peek = iterator.isEmpty() ? null : iterator.peek();
                         if(peek instanceof InstructionNode) {
                             Instruction peekI = ((InstructionNode) peek).getInstruction();
                             if(this.check(')', peekI)) {
@@ -84,13 +89,14 @@ public class SequenceNode implements Node, InstructionSequence {
                         }
                     }
                     builder.append(left).append(p.write()).append(right);
+                    string = false;
                 } else if (p.getObj() instanceof BigDecimal && !iterator.isEmpty()) {
                     String val = ((BigDecimal) p.getObj()).compareTo(BigDecimal.ONE.negate()) == 0 ? "-" : ((BigDecimal) p.getObj()).compareTo(BigDecimal.ZERO) == 0 ? "." : String.valueOf(((BigDecimal) p.getObj()).stripTrailingZeros());
                     builder.append(val);
                     while (val.startsWith("0")) {
                         val = Strings.cutFirst(val);
                     }
-                    Node peek = iterator.peek();
+                    Node peek = iterator.isEmpty() ? null : iterator.peek();
                     PushNode pk;
                     while (peek instanceof PushNode && (pk = ((PushNode) peek)).getObj() instanceof BigDecimal) {
                         iterator.pop();
@@ -106,7 +112,20 @@ public class SequenceNode implements Node, InstructionSequence {
                         peek = iterator.isEmpty() ? null : iterator.peek();
                         val = val2;
                     }
+                    string = false;
+                } else if (p.getObj() instanceof String) {
+                    if(!string) {
+                        builder.append("\"");
+                    }
+
+                    strings.add(p.write());
+                    Node peek = iterator.isEmpty() ? null : iterator.peek();
+                    if(!(peek instanceof PushNode && ((PushNode) peek).getObj() instanceof String)) {
+
+                    }
+                    string = true;
                 } else {
+                    string = false;
                     builder.append(p.write());
                 }
             } else {

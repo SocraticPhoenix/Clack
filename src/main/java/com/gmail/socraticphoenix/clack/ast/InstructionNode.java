@@ -21,10 +21,10 @@
  */
 package com.gmail.socraticphoenix.clack.ast;
 
+import com.gmail.socraticphoenix.clack.program.ClackRegistry;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.instruction.Argument;
 import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
-import com.gmail.socraticphoenix.clack.program.ClackRegistry;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
 
@@ -54,6 +54,8 @@ public class InstructionNode implements Node {
 
     @Override
     public void exec(Memory memory, Program program) {
+        program.waitForGo();
+        program.visit(this);
         if (!((10 - program.getSecurity()) >= this.instruction.danger())) {
             program.error("Security level is " + program.getSecurity() + ", which prevents \"" + this.instruction.canonical() + "\" from executing due to its danger level of " + this.instruction.danger());
             return;

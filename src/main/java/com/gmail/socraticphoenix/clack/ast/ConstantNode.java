@@ -21,22 +21,28 @@
  */
 package com.gmail.socraticphoenix.clack.ast;
 
-import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.ClackRegistry;
+import com.gmail.socraticphoenix.clack.program.Program;
+import com.gmail.socraticphoenix.clack.program.memory.Constant;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
 
 public class ConstantNode implements Node {
+    private Constant constant;
     private String precursor;
     private String name;
 
+
     public ConstantNode(String precursor, String name) {
         this.name = name;
+        this.constant = ClackRegistry.constant(name);
     }
 
     @Override
     public void exec(Memory memory, Program program) {
-        memory.push(Variable.of(ClackRegistry.constant(this.name).getValue()));
+        program.waitForGo();
+        program.visit(this);
+        memory.push(Variable.of(this.constant.getValue()));
     }
 
     @Override

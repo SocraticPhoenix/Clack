@@ -92,4 +92,9 @@ public class Divide implements Instruction {
         memory.push(Divide.div(a, b, program));
     }
 
+    @Override
+    public String operation() {
+        return "${a} / ${b} = ${res}";
+    }
+
 }

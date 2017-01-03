@@ -117,4 +117,9 @@ public class Multiply implements Instruction {
         memory.push(Multiply.mul(a, b, program));
     }
 
+    @Override
+    public String operation() {
+        return "${a} * ${b} = ${res}";
+    }
+
 }

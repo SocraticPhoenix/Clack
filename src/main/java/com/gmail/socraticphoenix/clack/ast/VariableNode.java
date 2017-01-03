@@ -35,6 +35,8 @@ public class VariableNode implements Node {
 
     @Override
     public void exec(Memory memory, Program program) {
+        program.waitForGo();
+        program.visit(this);
         if(memory.isPresent(this.id)) {
             memory.push(memory.get(this.id));
         } else {

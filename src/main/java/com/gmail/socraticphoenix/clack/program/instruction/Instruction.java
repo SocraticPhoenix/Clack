@@ -42,4 +42,6 @@ public interface Instruction {
 
     void exec(Memory memory, Program program, Map<String, Variable> arguments);
 
+    String operation();
+
 }

@@ -21,21 +21,44 @@
  */
 package com.gmail.socraticphoenix.clack.ast;
 
-import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
+import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.nebula.collection.Items;
+import com.gmail.socraticphoenix.nebula.string.CharacterStream;
+import com.gmail.socraticphoenix.nebula.string.ParserData;
 import com.gmail.socraticphoenix.nebula.string.Strings;
 
 import java.math.BigDecimal;
 import java.util.Stack;
 
 public class PushNode implements Node {
+    private static final ParserData data = new ParserData().escapeChar('\\')
+            .unicodeEscapeChar('u')
+            .escape('b', "\b")
+            .escape('r', "\r")
+            .escape('f', "\f");
     private Object obj;
 
     public PushNode(Object obj) {
         this.obj = obj;
+    }
+
+    private static String process(String s) {
+        StringBuilder builder = new StringBuilder();
+        CharacterStream stream = new CharacterStream(s);
+        while (stream.hasNext()) {
+            builder.append(stream.nextUntil(c -> c == '\\', PushNode.data));
+            if(stream.isNext('\\')) {
+                stream.next();
+                builder.append("\\");
+                if(stream.isNext('b', 'r', 'f')) {
+                    builder.append('\\');
+                }
+            }
+        }
+        return builder.toString();
     }
 
     public static String write(Object obj) {
@@ -44,7 +67,7 @@ public class PushNode implements Node {
 
     public static String write(Object obj, boolean deep, boolean hasNext) {
         if (obj instanceof String) {
-            return "\"" + obj + "“";
+            return PushNode.process(obj.toString());
         } else if (obj instanceof BigDecimal) {
             return String.valueOf(obj);
         } else if (obj instanceof VariableList) {
@@ -95,6 +118,8 @@ public class PushNode implements Node {
 
     @Override
     public void exec(Memory memory, Program program) {
+        program.waitForGo();
+        program.visit(this);
         memory.push(Variable.of(this.obj));
     }
 

@@ -32,6 +32,8 @@ public class SetVariableNode extends VariableNode {
 
     @Override
     public void exec(Memory memory, Program program) {
+        program.waitForGo();
+        program.visit(this);
         memory.set(this.id, memory.pop().val());
     }
 

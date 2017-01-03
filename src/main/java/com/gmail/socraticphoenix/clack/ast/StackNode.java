@@ -35,6 +35,8 @@ public class StackNode implements Node {
 
     @Override
     public void exec(Memory memory, Program program) {
+        program.waitForGo();
+        program.visit(this);
         memory.setStack(this.id);
     }
 
