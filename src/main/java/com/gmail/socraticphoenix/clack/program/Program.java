@@ -30,6 +30,7 @@ import com.gmail.socraticphoenix.clack.program.memory.FunctionMemory;
 import com.gmail.socraticphoenix.clack.program.memory.StackMemory;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
 import com.gmail.socraticphoenix.jencoding.charsets.JEncodingCharsets;
+import com.gmail.socraticphoenix.nebula.collection.Layers;
 import com.gmail.socraticphoenix.nebula.collection.coupling.Pair;
 
 import java.math.MathContext;
@@ -170,19 +171,18 @@ public class Program {
     }
 
 
-    public static List<Pair<Character, String>> tryEncodingStrategies(String s){
-        return new ArrayList<>();
-    }
-
     public static Optional<String> shortestEncoding(List<String> strings) {
         List<String> written = new ArrayList<>();
-        List<List<Pair<Character, String>>> encodings = new ArrayList<>();
-        for(String s : strings) {
-            encodings.add(Program.tryEncodingStrategies(s));
+        Layers<Pair<Character, String>> encodings = new Layers<>();
+        for (int i = 0; i < strings.size(); i++) {
+            String s = strings.get(i);
+            encodings.add(Pair.of('“', s), i);
+            encodings.add(Pair.of('”', Program.encode1(s)), i);
+            encodings.add(Pair.of('«', Program.encode2(s)), i);
         }
 
 
-        for(List<Pair<Character, String>> encoding : encodings) {
+        for(List<Pair<Character, String>> encoding : encodings.stacks()) {
             Iterator<Pair<Character, String>> iterator = encoding.iterator();
             StringBuilder builder = new StringBuilder().append("\"");
             while (iterator.hasNext()) {
