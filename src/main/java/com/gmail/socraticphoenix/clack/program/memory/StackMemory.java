@@ -94,6 +94,11 @@ public class StackMemory implements Memory {
     }
 
     @Override
+    public Variable[] variables() {
+        return this.variables;
+    }
+
+    @Override
     public Variable popWellValue() {
         return Variable.of(BigDecimal.ZERO);
     }

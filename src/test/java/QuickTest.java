@@ -20,12 +20,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import com.gmail.socraticphoenix.clack.app.gui.ClackUI;
+import com.gmail.socraticphoenix.clack.parse.ParseException;
+import com.gmail.socraticphoenix.clack.parse.TokenGroups;
 
 public class QuickTest {
 
-    public static void main(String[] args) {
-        new ClackUI().display();
+    public static void main(String[] args) throws ParseException {
+        System.out.println((TokenGroups.VARIABLES + TokenGroups.CONSTANTS).codePoints().toArray().length);
+        System.out.println((TokenGroups.STACKS + TokenGroups.FUNCTIONS).codePoints().toArray().length);
+        System.out.println(TokenGroups.SYNTAX.codePoints().toArray().length);
+        System.out.println("ẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻ".codePoints().toArray().length);
+        System.out.println("ạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż".codePoints().toArray().length);
+        System.out.println("!@&*_+/%^?~`<>'₢€£￦￥¥₳฿￠₡¢₢₵₫￡Ł|".codePoints().toArray().length);
     }
 
 }

@@ -24,6 +24,7 @@ package com.gmail.socraticphoenix.clack.program;
 import com.gmail.socraticphoenix.clack.app.Arguments;
 import com.gmail.socraticphoenix.clack.app.ClackSystem;
 import com.gmail.socraticphoenix.clack.ast.Node;
+import com.gmail.socraticphoenix.clack.ast.PushNode;
 import com.gmail.socraticphoenix.clack.ast.SequenceNode;
 import com.gmail.socraticphoenix.clack.parse.TokenGroups;
 import com.gmail.socraticphoenix.clack.program.memory.FunctionMemory;
@@ -32,29 +33,34 @@ import com.gmail.socraticphoenix.clack.program.memory.Variable;
 import com.gmail.socraticphoenix.jencoding.charsets.JEncodingCharsets;
 import com.gmail.socraticphoenix.nebula.collection.Layers;
 import com.gmail.socraticphoenix.nebula.collection.coupling.Pair;
+import com.gmail.socraticphoenix.nebula.collection.coupling.Triple;
+import com.gmail.socraticphoenix.nebula.string.Strings;
 
 import java.math.MathContext;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.function.Predicate;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 public class Program {
     private Map<Character, SequenceNode> functions;
     private StackMemory trans;
     private boolean running;
     private boolean errored;
+    private boolean debug;
+    private boolean debugFrozen;
     private FunctionMemory main;
     private int security;
+    private Stack<Triple<Character, SequenceNode, FunctionMemory>> methodStack;
 
-    public Program(List<SequenceNode> functions, int security) {
-        if(functions.size() == 0 || functions.size() > 27) {
+    public Program(List<SequenceNode> functions, int security, boolean debug) {
+        if (functions.size() == 0 || functions.size() > 27) {
             throw new IllegalArgumentException("Functions must have nonzero length less than 28");
         }
 
@@ -67,6 +73,65 @@ public class Program {
         this.running = true;
         this.main = new FunctionMemory(this, this.trans);
         this.security = security;
+        this.debug = debug;
+        this.debugFrozen = debug;
+        this.methodStack = new Stack<>();
+    }
+
+    public static String encode1(String s) {
+        //For future use
+        return s;
+    }
+
+    public static String encode2(String s) {
+        return new String(s.getBytes(StandardCharsets.UTF_8), JEncodingCharsets.CLACK);
+    }
+
+    public static String decode1(String s) {
+        //For future use
+        return s;
+    }
+
+    public static String decode2(String s) {
+        return new String(s.getBytes(JEncodingCharsets.CLACK), StandardCharsets.UTF_8);
+    }
+
+    public static Optional<String> shortestEncoding(List<String> strings) {
+        List<String> written = new ArrayList<>();
+        Layers<Pair<Character, String>> encodings = new Layers<>();
+        for (int i = 0; i < strings.size(); i++) {
+            String s = strings.get(i);
+            encodings.add(Pair.of('“', s), i);
+            encodings.add(Pair.of('”', Program.encode1(s)), i);
+            encodings.add(Pair.of('«', Program.encode2(s)), i);
+        }
+
+        for (List<Pair<Character, String>> encoding : encodings.stacks()) {
+            Iterator<Pair<Character, String>> iterator = encoding.iterator();
+            StringBuilder builder = new StringBuilder().append("\"");
+            while (iterator.hasNext()) {
+                Pair<Character, String> piece = iterator.next();
+                builder.append(Strings.escape(piece.getB(), PushNode.DATA));
+                while (iterator.hasNext()) {
+                    Pair<Character, String> nextPiece = iterator.next();
+                    if (piece.getA() == nextPiece.getA()) {
+                        builder.append("»").append(nextPiece.getA());
+                    } else {
+                        builder.append(piece.getA()).append("\"").append(Strings.escape(piece.getB(), PushNode.DATA));
+                        piece = nextPiece;
+                        break;
+                    }
+                }
+                builder.append(piece.getA());
+            }
+            written.add(builder.toString());
+        }
+
+        return written.stream().sorted(Comparator.comparingInt(String::length)).findFirst();
+    }
+
+    public Stack<Triple<Character, SequenceNode, FunctionMemory>> getMethodStack() {
+        return this.methodStack;
     }
 
     public int getSecurity() {
@@ -97,11 +162,19 @@ public class Program {
     }
 
     public void callFunction(char id) {
-        this.functions.get(id).exec(new FunctionMemory(this, this.trans), this);
+        SequenceNode function = this.functions.get(id);
+        FunctionMemory functionMemory = new FunctionMemory(this, this.trans);
+        this.methodStack.push(Triple.of(id, function, functionMemory));
+        function.exec(functionMemory, this);
+        this.methodStack.pop();
     }
 
     public void run() {
-        this.functions.get('$').exec(this.main, this);
+        SequenceNode function = this.functions.get('$');
+        FunctionMemory functionMemory = this.main;
+        this.methodStack.push(Triple.of('$', function, functionMemory));
+        function.exec(functionMemory, this);
+        this.methodStack.pop();
     }
 
     public Variable input(Predicate<Variable> form, String desc) {
@@ -113,7 +186,7 @@ public class Program {
     }
 
     public void terminate(Arguments arguments) {
-        if(!arguments.hasFlag("-n") && !this.errored) {
+        if (!arguments.hasFlag("-n") && !this.errored) {
             while (!this.main.current().isEmpty()) {
                 ClackSystem.printlnOut(this.main.pop().toString());
             }
@@ -124,86 +197,29 @@ public class Program {
         return this.functions.get(c);
     }
 
-    public void waitForGo() {
+    public void stepDebugger() {
+        this.debugFrozen = false;
+    }
 
+    public void waitForGo() {
+        while (!this.running || this.debugFrozen) ;
+        this.debugFrozen = this.debug;
     }
 
     public void visit(Node node) {
-
+        //For future use
     }
 
-    public static String encode1(String s) {
-        byte[] bytes = s.getBytes(JEncodingCharsets.CLACK);
-        Deflater deflater = new Deflater();
-        deflater.setInput(bytes);
-        byte[] buffer = new byte[1024];
+    public String write() {
         StringBuilder builder = new StringBuilder();
-        while (!deflater.finished()) {
-            int len = deflater.deflate(buffer);
-            byte[] actual = new byte[len];
-            System.arraycopy(buffer, 0, actual, 0, len);
-            builder.append(new String(actual, JEncodingCharsets.CLACK));
+        for (Map.Entry<Character, SequenceNode> function : this.functions.entrySet()) {
+            if (function.getKey() != '$') {
+                builder.append(function.getValue().write()).append("\n");
+            } else {
+                builder.append(function.getValue().write());
+            }
         }
         return builder.toString();
-    }
-
-    public static String encode2(String s) {
-        return s;
-    }
-
-    public static String decode1(String s) throws DataFormatException {
-        byte[] bytes = s.getBytes(JEncodingCharsets.CLACK);
-        Inflater inflater = new Inflater();
-        inflater.setInput(bytes);
-        byte[] buffer = new byte[1024];
-        StringBuilder builder = new StringBuilder();
-        while (!inflater.finished()) {
-            int len = inflater.inflate(buffer);
-            byte[] actual = new byte[len];
-            System.arraycopy(buffer, 0, actual, 0, len);
-            builder.append(new String(actual, JEncodingCharsets.CLACK));
-        }
-        return buffer.toString();
-    }
-
-    public static String decode2(String s) {
-        return s;
-    }
-
-
-    public static Optional<String> shortestEncoding(List<String> strings) {
-        List<String> written = new ArrayList<>();
-        Layers<Pair<Character, String>> encodings = new Layers<>();
-        for (int i = 0; i < strings.size(); i++) {
-            String s = strings.get(i);
-            encodings.add(Pair.of('“', s), i);
-            encodings.add(Pair.of('”', Program.encode1(s)), i);
-            encodings.add(Pair.of('«', Program.encode2(s)), i);
-        }
-
-
-        for(List<Pair<Character, String>> encoding : encodings.stacks()) {
-            Iterator<Pair<Character, String>> iterator = encoding.iterator();
-            StringBuilder builder = new StringBuilder().append("\"");
-            while (iterator.hasNext()) {
-                Pair<Character, String> piece = iterator.next();
-                builder.append(piece.getB());
-                while (iterator.hasNext()) {
-                    Pair<Character, String> nextPiece = iterator.next();
-                    if(piece.getA() == nextPiece.getA()) {
-                        builder.append("»").append(nextPiece.getA());
-                    } else {
-                        builder.append(piece.getA()).append("\"").append(nextPiece.getB());
-                        piece = nextPiece;
-                        break;
-                    }
-                }
-                builder.append(piece.getA());
-            }
-            written.add(builder.toString());
-        }
-
-        return written.stream().sorted((a, b) -> Integer.compare(b.length(), a.length())).findFirst();
     }
 
 }

@@ -26,19 +26,25 @@ import com.gmail.socraticphoenix.clack.program.memory.Memory;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
 import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.nebula.collection.Items;
-import com.gmail.socraticphoenix.nebula.string.CharacterStream;
 import com.gmail.socraticphoenix.nebula.string.ParserData;
 import com.gmail.socraticphoenix.nebula.string.Strings;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class PushNode implements Node {
-    private static final ParserData data = new ParserData().escapeChar('\\')
+    public static final ParserData DATA = new ParserData().escapeChar('\\')
             .unicodeEscapeChar('u')
             .escape('b', "\b")
             .escape('r', "\r")
-            .escape('f', "\f");
+            .escape('f', "\f")
+            .escape('n', "\n")
+            .escape('“')
+            .escape('”')
+            .escape('«')
+            .escape('»');
     private Object obj;
 
     public PushNode(Object obj) {
@@ -46,19 +52,7 @@ public class PushNode implements Node {
     }
 
     private static String process(String s) {
-        StringBuilder builder = new StringBuilder();
-        CharacterStream stream = new CharacterStream(s);
-        while (stream.hasNext()) {
-            builder.append(stream.nextUntil(c -> c == '\\', PushNode.data));
-            if(stream.isNext('\\')) {
-                stream.next();
-                builder.append("\\");
-                if(stream.isNext('b', 'r', 'f')) {
-                    builder.append('\\');
-                }
-            }
-        }
-        return builder.toString();
+        return Strings.escape(s, PushNode.DATA);
     }
 
     public static String write(Object obj) {
@@ -67,7 +61,7 @@ public class PushNode implements Node {
 
     public static String write(Object obj, boolean deep, boolean hasNext) {
         if (obj instanceof String) {
-            return PushNode.process(obj.toString());
+            return Program.shortestEncoding(Items.buildList((String) obj)).get();
         } else if (obj instanceof BigDecimal) {
             return String.valueOf(obj);
         } else if (obj instanceof VariableList) {
@@ -78,7 +72,6 @@ public class PushNode implements Node {
             iterator.addAll(Items.reversed(list));
             while (!iterator.isEmpty()) {
                 Variable var = iterator.pop();
-
                 if (var.val() instanceof BigDecimal && !iterator.isEmpty()) {
                     String val = ((BigDecimal) var.val()).compareTo(BigDecimal.ONE.negate()) == 0 ? "-" : ((BigDecimal) var.val()).compareTo(BigDecimal.ZERO) == 0 ? "." : String.valueOf(((BigDecimal) var.val()).stripTrailingZeros());
                     builder.append(val);
@@ -95,11 +88,23 @@ public class PushNode implements Node {
                         if ((val.contains(".") && val2.startsWith(".")) || val2.startsWith("-")) {
                             builder.append(val2);
                         } else {
-                            builder.append("|").append(val2);
+                            builder.append(" ").append(val2);
                         }
                         peek = iterator.isEmpty() ? null : iterator.peek();
                         val = val2;
                     }
+                } else if (var.val() instanceof String) {
+                    String val = var.get(String.class).get();
+                    List<String> strings = new ArrayList<>();
+                    strings.add(val);
+                    Variable peek = iterator.isEmpty() ? null : iterator.peek();
+                    while (peek != null && peek.val() instanceof String) {
+                        iterator.pop();
+                        strings.add(peek.get(String.class).get());
+                        peek = iterator.isEmpty() ? null : iterator.peek();
+                    }
+                    String encoding = Program.shortestEncoding(strings).get();
+                    builder.append(PushNode.write(encoding, true, !iterator.isEmpty()));
                 } else {
                     builder.append(PushNode.write(var.val(), true, !iterator.isEmpty()));
                 }

@@ -60,7 +60,6 @@ public class Token {
         SYNTAX_RFLOOR,
         SYNTAX_LCEIL,
         SYNTAX_RCEIL,
-        SYNTAX_SEP,
         SYNTAX_STRING_START,
         SYNTAX_STRING_END,
         SYNTAX_STRING_END_START,

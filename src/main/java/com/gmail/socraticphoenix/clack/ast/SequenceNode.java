@@ -60,8 +60,6 @@ public class SequenceNode implements Node, InstructionSequence {
         StringBuilder builder = new StringBuilder();
         Stack<Node> iterator = new Stack<>();
         iterator.addAll(Items.reversed(this.nodes));
-        List<String> strings = new ArrayList<>();
-        boolean string = false;
         while (!iterator.isEmpty()) {
             Node n = iterator.pop();
             if(n instanceof PushNode) {
@@ -89,16 +87,15 @@ public class SequenceNode implements Node, InstructionSequence {
                         }
                     }
                     builder.append(left).append(p.write()).append(right);
-                    string = false;
                 } else if (p.getObj() instanceof BigDecimal && !iterator.isEmpty()) {
                     String val = ((BigDecimal) p.getObj()).compareTo(BigDecimal.ONE.negate()) == 0 ? "-" : ((BigDecimal) p.getObj()).compareTo(BigDecimal.ZERO) == 0 ? "." : String.valueOf(((BigDecimal) p.getObj()).stripTrailingZeros());
                     builder.append(val);
                     while (val.startsWith("0")) {
                         val = Strings.cutFirst(val);
                     }
-                    Node peek = iterator.isEmpty() ? null : iterator.peek();
+                    Node peek = iterator.peek();
                     PushNode pk;
-                    while (peek instanceof PushNode && (pk = ((PushNode) peek)).getObj() instanceof BigDecimal) {
+                    while (peek != null && peek instanceof PushNode && (pk = ((PushNode) peek)).getObj() instanceof BigDecimal) {
                         iterator.pop();
                         String val2 = ((BigDecimal) pk.getObj()).compareTo(BigDecimal.ONE.negate()) == 0 ? "-" : ((BigDecimal) pk.getObj()).compareTo(BigDecimal.ZERO) == 0 ? "." : String.valueOf(((BigDecimal) pk.getObj()).stripTrailingZeros());
                         while (val2.startsWith("0")) {
@@ -107,25 +104,24 @@ public class SequenceNode implements Node, InstructionSequence {
                         if ((val.contains(".") && val2.startsWith(".")) || val2.startsWith("-")) {
                             builder.append(val2);
                         } else {
-                            builder.append("|").append(val2);
+                            builder.append(" ").append(val2);
                         }
                         peek = iterator.isEmpty() ? null : iterator.peek();
                         val = val2;
                     }
-                    string = false;
-                } else if (p.getObj() instanceof String) {
-                    if(!string) {
-                        builder.append("\"");
+                } else if (p.getObj() instanceof String && !iterator.isEmpty()) {
+                    String s = (String) p.getObj();
+                    List<String> strings = new ArrayList<>();
+                    strings.add(s);
+                    Node peek = iterator.peek();
+                    PushNode pk;
+                    while (peek != null && peek instanceof PushNode && (pk = ((PushNode) peek)).getObj() instanceof String) {
+                        iterator.pop();
+                        strings.add((String) pk.getObj());
+                        peek = iterator.isEmpty() ? null : iterator.peek();
                     }
-
-                    strings.add(p.write());
-                    Node peek = iterator.isEmpty() ? null : iterator.peek();
-                    if(!(peek instanceof PushNode && ((PushNode) peek).getObj() instanceof String)) {
-
-                    }
-                    string = true;
+                    builder.append(Program.shortestEncoding(strings).get());
                 } else {
-                    string = false;
                     builder.append(p.write());
                 }
             } else {

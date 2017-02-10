@@ -56,7 +56,7 @@ repositories {
 
 dependencies {
     shadow "com.gmail.socraticphoenix:NebulaAPI:0.0.10"
-    shadow "com.gmail.socraticphoenix:JEncoding:0.0.1"
+    shadow "com.gmail.socraticphoenix:JEncoding:0.0.4"
     shadow "com.intellij:forms_rt:7.0.3"
 }
 //End Repositories and Dependencies

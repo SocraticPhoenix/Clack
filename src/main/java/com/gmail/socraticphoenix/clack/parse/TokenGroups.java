@@ -22,20 +22,21 @@
 package com.gmail.socraticphoenix.clack.parse;
 
 public interface TokenGroups {
-    String ALL = "αβγδεζηθικλμνξοπρστυφχψωΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩabcdefghijklmnopqrstuvwxyz#ABCDEFGHIJKLMNOPQRSTUVWXYZ$-0123456789.()[]{}⌊⌋⌈⌉|\"“”«»:;=\n\\\t ẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż!@&*_+/%^?~`️<>'₢€£￦￥¥₳฿￠₡¢₢₵₫￡Ł₥₦₱₯₤₣₲₭";
-    String ALL_BY_ROW = "αβγδεζηθικλμνξοπρστυφχψω,ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ,abcdefghijklmnopqrstuvwxyz#,ABCDEFGHIJKLMNOPQRSTUVWXYZ$,-0123456789.,()[]{}⌊⌋⌈⌉|\"“”«»:;=\n\\\t ,ẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻ,ạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓ,ȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż!@&*_+/%^?~`️<>',₢€£￦￥¥₳฿￠₡¢₢₵₫￡Ł,₥₦₱₯₤₣₲₭";
+    String[] ROWS = new String[] {TokenGroups.VARIABLES, TokenGroups.CONSTANTS, TokenGroups.STACKS, TokenGroups.FUNCTIONS, TokenGroups.SYNTAX, TokenGroups.WHITESPACE + TokenGroups.INSTRUCTION_LENGTH_PRECURSORS + TokenGroups.CONSTANT_LENGTH_PRECURSORS, "ẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒ", "ȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻ", "ạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓ", "ȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż", "!@&*_+/%^?~`<>'₢€£￦￥¥₳฿￠₡¢₢₵₫￡Ł|"};
+
+    String ALL = "αβγδεζηθικλμνξοπρστυφχψωΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩabcdefghijklmnopqrstuvwxyz#ABCDEFGHIJKLMNOPQRSTUVWXYZ$-0123456789.()[]{}⌊⌋⌈⌉\"“”«»:;=\n\\\t ẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż!@&*_+/%^?~`<>'₢€£￦￥¥₳฿￠₡¢₢₵₫￡Ł|₥₦₱₯₤₣₲₭";
 
     String VARIABLES = "αβγδεζηθικλμνξοπρστυφχψω";
     String CONSTANTS = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ";
     String STACKS = "abcdefghijklmnopqrstuvwxyz#";
     String FUNCTIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ$";
 
-    String SYNTAX = "-0123456789.()[]{}⌊⌋⌈⌉|\"“”«»:;=\n\\";
+    String SYNTAX = "-0123456789.()[]{}⌊⌋⌈⌉\"“”«»:;=\n\\";
     String DIGITS = "0123456789";
 
     String WHITESPACE = "\t ";
 
-    String INSTRUCTIONS = "ẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż!@&*_+/%^?~`️<>'₢€£￦￥¥₳฿￠₡¢₢₵₫￡Ł";
+    String INSTRUCTIONS = "ẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż!@&*_+/%^?~`<>'₢€£￦￥¥₳฿￠₡¢₢₵₫￡Ł|";
 
     String CONSTANT_LENGTH_PRECURSORS = "₥₦₱₯";
 

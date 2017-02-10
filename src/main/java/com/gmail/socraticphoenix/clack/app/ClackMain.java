@@ -27,9 +27,13 @@ import com.gmail.socraticphoenix.clack.parse.ProgramParser;
 import com.gmail.socraticphoenix.clack.parse.ProgramTokenizer;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
+import com.gmail.socraticphoenix.jencoding.charsets.JEncodingCharsets;
 import com.gmail.socraticphoenix.nebula.math.Calculations;
 import com.gmail.socraticphoenix.nebula.string.Strings;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -40,19 +44,19 @@ public class ClackMain {
     public static void main(String[] args) {
         Arguments arguments = new Arguments(args);
         int security;
-        if(arguments.hasFlag("s") && Calculations.isInteger(arguments.getFlag("s"))) {
+        if (arguments.hasFlag("s") && Calculations.isInteger(arguments.getFlag("s"))) {
             security = Integer.parseInt(arguments.getFlag("s"));
         } else {
             security = 10;
         }
 
-        if(arguments.hasFlag("e") || arguments.hasFlag("f")) {
+        if (arguments.hasFlag("e") || arguments.hasFlag("f")) {
             String prog;
-            if(arguments.hasFlag("e")) {
+            if (arguments.hasFlag("e")) {
                 prog = arguments.getFlag("e");
             } else if (arguments.hasFlag("f")) {
                 try {
-                    List<String> strings = Files.readAllLines(Paths.get(arguments.getFlag("f")));
+                    List<String> strings = Files.readAllLines(Paths.get(arguments.getFlag("f")), JEncodingCharsets.CLACK);
                     prog = Strings.glue("\n", (Object[]) strings.toArray(new String[strings.size()]));
                 } catch (IOException e) {
                     ClackSystem.printErr(e);
@@ -66,7 +70,7 @@ public class ClackMain {
             tokenizer.tokenize(prog);
             ProgramParser parser = new ProgramParser(tokenizer.finish());
             try {
-                Program program = new Program(parser.finish(), security);
+                Program program = new Program(parser.finish(), security, false);
                 for (int i = 0; i < arguments.getArgs().size(); i++) {
                     program.getTrans().push(Variable.parse(arguments.getArgs().get(i)));
                 }
@@ -77,8 +81,19 @@ public class ClackMain {
                 e.printStackTrace();
             }
         } else if (arguments.hasFlag("g")) {
-            new ClackUI().display();
+            try {
+                Font font = Font.createFont(Font.TRUETYPE_FONT, ClackMain.class.getResourceAsStream("unifont.ttf"));
+                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+            } catch (FontFormatException | IOException e) {
+                ClackSystem.printlnErr("Failed to load font!");
+                ClackSystem.printErr(e);
+            }
+            ClackUI ui = new ClackUI();
+            ClackSystem.setUI(ui);
+            ui.display();
+            ClackSystem.printOut("The ClackApp uses GNU Unifont Glyphs, an awesome free-to-use font that handles the entire unicode basic multilingual plane (65,536 characters). Check them out here: http://unifoundry.com/unifont.html");
         }
+
     }
 
 }

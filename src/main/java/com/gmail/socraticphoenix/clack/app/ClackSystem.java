@@ -21,6 +21,7 @@
  */
 package com.gmail.socraticphoenix.clack.app;
 
+import com.gmail.socraticphoenix.clack.app.gui.ClackUI;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
 
@@ -32,6 +33,11 @@ import java.util.function.Predicate;
 
 public class ClackSystem {
     private static Scanner scanner = new Scanner(System.in);
+    private static ClackUI clackUI;
+
+    public static void setUI(ClackUI clackUI) {
+        ClackSystem.clackUI = clackUI;
+    }
 
     public static void printlnErr(String s) {
         ClackSystem.printErr(s + System.lineSeparator());
@@ -43,24 +49,47 @@ public class ClackSystem {
 
     public static void printErr(String s) {
         System.err.print(s);
+        if(ClackSystem.clackUI != null) {
+            ClackSystem.clackUI.printErr(s);
+        }
     }
 
     public static void printOut(String s) {
         System.out.print(s);
+        if(ClackSystem.clackUI != null) {
+            ClackSystem.clackUI.printOut(s);
+        }
     }
 
     public static Variable receiveInput(Program program, Predicate<Variable> form, String desc) {
         ClackSystem.printOut("Enter a value: ");
-        while (!scanner.hasNextLine() && program.isRunning());
-        if(!program.isRunning()) {
-            return Variable.of(BigDecimal.ZERO);
-        } else {
-            Variable var = Variable.parse(scanner.nextLine());
-            if(form.test(var)) {
-                return var;
+        if(ClackSystem.clackUI != null) {
+            while (ClackSystem.clackUI.getInput().isEmpty() && program.isRunning());
+            if(!program.isRunning()) {
+                return Variable.of(BigDecimal.ONE);
             } else {
-                ClackSystem.printlnOut("Invalid input, expected \"" + desc + "\"");
-                return ClackSystem.receiveInput(program, form, desc);
+                Variable var = Variable.parse(ClackSystem.clackUI.getInput().pop());
+                if (form.test(var)) {
+                    return var;
+                } else {
+                    ClackSystem.printlnOut("Invalid input, expected \"" + desc + "\"");
+                    ClackSystem.printOut("Enter a value: ");
+                    return ClackSystem.receiveInput(program, form, desc);
+                }
+            }
+        } else {
+            while (!scanner.hasNextLine() && program.isRunning());
+            if (!program.isRunning()) {
+                return Variable.of(BigDecimal.ZERO);
+            } else {
+                Variable var = Variable.parse(scanner.nextLine());
+                if (form.test(var)) {
+                    return var;
+                } else {
+                    ClackSystem.printlnOut("Invalid input, expected \"" + desc + "\"");
+                    ClackSystem.printOut("Enter a value: ");
+                    return ClackSystem.receiveInput(program, form, desc);
+                }
             }
         }
     }

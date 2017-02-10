@@ -29,6 +29,8 @@ public interface Memory {
 
     Stack<Variable> current();
 
+    Variable[] variables();
+
     Variable popWellValue();
 
     Variable peekWellValue();

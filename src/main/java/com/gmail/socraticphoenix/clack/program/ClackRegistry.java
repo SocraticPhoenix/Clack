@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Add;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Divide;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Multiply;
+import com.gmail.socraticphoenix.clack.program.instruction.instructions.Print;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Subtract;
 import com.gmail.socraticphoenix.clack.program.memory.Constant;
 
@@ -46,6 +47,7 @@ public class ClackRegistry {
         r(new Subtract());
         r(new Multiply());
         r(new Divide());
+        r(new Print());
     }
 
     private static void r(Instruction instruction) {

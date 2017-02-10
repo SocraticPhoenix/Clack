@@ -30,9 +30,10 @@ import com.gmail.socraticphoenix.clack.ast.SequenceNode;
 import com.gmail.socraticphoenix.clack.ast.SetVariableNode;
 import com.gmail.socraticphoenix.clack.ast.StackNode;
 import com.gmail.socraticphoenix.clack.ast.VariableNode;
+import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
-import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
+import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.nebula.collection.coupling.Triple;
 import com.gmail.socraticphoenix.nebula.string.Strings;
 
@@ -60,7 +61,6 @@ import static com.gmail.socraticphoenix.clack.parse.Token.Type.SYNTAX_RBRACKET;
 import static com.gmail.socraticphoenix.clack.parse.Token.Type.SYNTAX_RCEIL;
 import static com.gmail.socraticphoenix.clack.parse.Token.Type.SYNTAX_RFLOOR;
 import static com.gmail.socraticphoenix.clack.parse.Token.Type.SYNTAX_RPAREN;
-import static com.gmail.socraticphoenix.clack.parse.Token.Type.SYNTAX_SEP;
 import static com.gmail.socraticphoenix.clack.parse.Token.Type.SYNTAX_STRING_CONTENT;
 import static com.gmail.socraticphoenix.clack.parse.Token.Type.SYNTAX_STRING_END;
 import static com.gmail.socraticphoenix.clack.parse.Token.Type.SYNTAX_STRING_END_START;
@@ -81,12 +81,27 @@ public class ProgramParser {
         this.stack.push(Triple.of(new ArrayList<>(), SYNTAX_LBRACE, SYNTAX_RBRACE));
     }
 
+    public static Optional<Instruction> instruction(Token.Type rbracket) {
+        Instruction res = null;
+        switch (rbracket) {
+            case SYNTAX_RPAREN:
+                break;
+            case SYNTAX_RBRACE:
+                break;
+            case SYNTAX_RFLOOR:
+                break;
+            case SYNTAX_RCEIL:
+                break;
+        }
+        return Optional.ofNullable(res);
+    }
+
     public List<SequenceNode> finish() throws ParseException {
         while (this.hasNext()) {
             this.step();
         }
 
-        if(!this.stack.isEmpty()) {
+        if (!this.stack.isEmpty()) {
             while (this.stack.size() != 1) {
                 Triple<List<Node>, Token.Type, Token.Type> triple = this.stack.pop();
                 this.stack.peek().getA().add(new PushNode(new SequenceNode(triple.getA())));
@@ -99,7 +114,7 @@ public class ProgramParser {
 
     public void step() throws ParseException {
         this.consumeSimple();
-        if(this.hasNext()) {
+        if (this.hasNext()) {
             this.consumeIgnored();
             Token next = this.nextToken().get();
             Token.Type t = next.getType();
@@ -148,21 +163,6 @@ public class ProgramParser {
         }
     }
 
-    public static Optional<Instruction> instruction(Token.Type rbracket) {
-        Instruction res = null;
-        switch (rbracket) {
-            case SYNTAX_RPAREN:
-                break;
-            case SYNTAX_RBRACE:
-                break;
-            case SYNTAX_RFLOOR:
-                break;
-            case SYNTAX_RCEIL:
-                break;
-        }
-        return Optional.ofNullable(res);
-    }
-
     public void consumeSimple() throws ParseException {
         this.consumeIgnored();
         while (this.simpleIsNext()) {
@@ -184,19 +184,26 @@ public class ProgramParser {
                 builder.append(peek.getContent());
             } else if (peek.getType() == SYNTAX_STRING_END) {
                 this.nextToken();
-                break;
+                char id = peek.getContent();
+                if (id == '“') {
+                    return Strings.deEscape(builder.toString(), PushNode.DATA);
+                } else if (id == '”') {
+                    return Program.decode1(Strings.deEscape(builder.toString(), PushNode.DATA));
+                } else if (id == '«') {
+                    return Program.decode2(Strings.deEscape(builder.toString(), PushNode.DATA));
+                }
             } else if (peek.getType() == SYNTAX_STRING_END_START) {
-                break;
+                return Strings.deEscape(builder.toString(), PushNode.DATA);
             } else {
                 throw new ParseException("Invalid token type in string mode: " + peek.getType());
             }
         }
-        return Strings.deEscape(builder.toString());
+        return Strings.deEscape(builder.toString(), PushNode.DATA);
     }
 
     public BigDecimal nextNumber() throws ParseException {
         StringBuilder builder = new StringBuilder();
-        boolean dot = false;
+        boolean dot;
         if (this.hasNext()) {
             Token next = this.nextToken().get();
             if (next.getType() == SYNTAX_NUM_PART || next.getType() == SYNTAX_DIGIT) {
@@ -292,7 +299,8 @@ public class ProgramParser {
             Token.Type peek = this.peekNext().get().getType();
             return peek == SYNTAX_STRING_START || peek == SYNTAX_STRING_END_START;
         }
-        return false;    }
+        return false;
+    }
 
     public boolean arrNext() {
         return this.hasNext() && this.peekNext().get().getType() == SYNTAX_LBRACKET;
@@ -434,7 +442,7 @@ public class ProgramParser {
     private void consumeIgnored() {
         while (this.hasNext()) {
             Token.Type type = this.peekNext().get().getType();
-            if (type == WHITESPACE || type == SYNTAX_SEP) {
+            if (type == WHITESPACE) {
                 this.nextToken();
             } else {
                 break;

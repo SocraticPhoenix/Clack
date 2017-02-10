@@ -56,6 +56,10 @@ public class FunctionMemory implements Memory {
         return this.currentStack;
     }
 
+    public Variable[] variables() {
+        return this.variables;
+    }
+
     @Override
     public Stack<Variable> current() {
         return this.currentStack.getStack();

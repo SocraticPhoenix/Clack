@@ -55,7 +55,6 @@ public class ProgramTokenizer {
     private static int rfloor = TokenGroups.index('⌋');
     private static int lceil = TokenGroups.index('⌈');
     private static int rceil = TokenGroups.index('⌉');
-    private static int sep = TokenGroups.index('|');
     private static int stringStart = TokenGroups.index('"');
     private static int stringEndStart = TokenGroups.index('»');
     private static int increaseArrayDepth = TokenGroups.index(':');
@@ -184,8 +183,6 @@ public class ProgramTokenizer {
             return SYNTAX_LCEIL;
         } else if (index == rceil) {
             return SYNTAX_RCEIL;
-        } else if (index == sep) {
-            return SYNTAX_SEP;
         } else if (index == stringStart) {
             return SYNTAX_STRING_START;
         } else if (index == stringEndStart) {
