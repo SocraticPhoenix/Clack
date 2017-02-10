@@ -30,6 +30,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -106,7 +107,11 @@ public class KeyboardUI extends JPanel {
                 String name = c == ' ' ? "_" : Strings.escape(String.valueOf(c));
                 String raw = String.valueOf(c);
                 JButton button = new JButton(name);
-                button.addActionListener(a -> this.clackUI.getProgram().append(String.valueOf(c)));
+                button.addActionListener(a -> {
+                    JTextArea area = this.clackUI.getProgram();
+                    int pos = area.getCaretPosition();
+                    area.insert(raw, pos);
+                });
                 button.setFont(font);
 
                 String tip;

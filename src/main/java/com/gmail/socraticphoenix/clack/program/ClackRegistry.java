@@ -26,9 +26,12 @@ import com.gmail.socraticphoenix.clack.program.instruction.instructions.Add;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Divide;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Multiply;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Print;
+import com.gmail.socraticphoenix.clack.program.instruction.instructions.PrintLine;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Subtract;
+import com.gmail.socraticphoenix.clack.program.instruction.instructions.While;
 import com.gmail.socraticphoenix.clack.program.memory.Constant;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -48,6 +51,10 @@ public class ClackRegistry {
         r(new Multiply());
         r(new Divide());
         r(new Print());
+        r(new PrintLine());
+        r(new While());
+
+        r(new Constant("Π", "pi", new BigDecimal("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679")));
     }
 
     private static void r(Instruction instruction) {

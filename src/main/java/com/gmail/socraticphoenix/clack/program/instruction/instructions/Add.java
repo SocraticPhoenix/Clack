@@ -48,7 +48,7 @@ public class Add implements Instruction {
             }
             return Variable.of(res);
         } else {
-            return Variable.of(a.get(String.class).get() + b.get(String.class).get());
+            return Variable.of(a.val().toString() + b.val().toString());
         }
     }
 

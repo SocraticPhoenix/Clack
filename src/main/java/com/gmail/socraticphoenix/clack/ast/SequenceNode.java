@@ -45,6 +45,10 @@ public class SequenceNode implements Node, InstructionSequence {
         this.nodes = nodes;
     }
 
+    public List<Node> getNodes() {
+        return this.nodes;
+    }
+
     @Override
     public void exec(Memory memory, Program program) {
         program.waitForGo();

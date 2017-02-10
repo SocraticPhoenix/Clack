@@ -21,6 +21,7 @@
  */
 package com.gmail.socraticphoenix.clack.app.gui;
 
+import com.gmail.socraticphoenix.clack.app.Arguments;
 import com.gmail.socraticphoenix.clack.app.ClackSystem;
 import com.gmail.socraticphoenix.clack.parse.ParseException;
 import com.gmail.socraticphoenix.clack.parse.ProgramParser;
@@ -79,6 +80,7 @@ public class ClackUI {
     private JTextField file;
     private JButton selectFileButton;
     private JPanel panel;
+    private JTextField flags;
     private JButton debugButton;
     private JButton stepDebuggerButton;
 
@@ -95,8 +97,11 @@ public class ClackUI {
 
     private Font font;
 
-    public ClackUI() {
+    private Arguments arguments;
+
+    public ClackUI(Arguments arguments) {
         this.font = new Font("Unifont", Font.PLAIN, 20);
+        this.arguments = arguments;
         this.input = new Stack<>();
         this.running = new AtomicBoolean(false);
         this.programRef = new AtomicReference<>();
@@ -136,6 +141,7 @@ public class ClackUI {
         this.error.setFont(this.font);
         this.in.setFont(this.font);
         this.file.setFont(this.font);
+        this.flags.setFont(this.font);
 
         this.encoding.addItem("CLACK");
         this.encoding.addItem("UTF8");
@@ -190,11 +196,12 @@ public class ClackUI {
         });
 
         this.minifyButton.addActionListener(a -> {
-            this.doProgramAction(p -> this.program.setText(p.write()), false);
+            this.doProgramAction(p -> this.program.setText(p.write()));
         });
 
         this.runButton.addActionListener(a -> {
-            this.doProgramAction(Program::run, false);
+            this.input.clear();
+            this.doProgramAction(Program::run);
         });
 
         this.toggleKeyboardButton.addActionListener(a -> {
@@ -221,7 +228,7 @@ public class ClackUI {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     String input = in.getText();
                     in.setText("");
-                    ClackSystem.printlnOut("> " + input);
+                    ClackSystem.printlnOut(input);
                     getInput().push(input);
                 }
             }
@@ -237,7 +244,7 @@ public class ClackUI {
         return this.encoding.getSelectedItem().equals("UTF8") ? StandardCharsets.UTF_8 : JEncodingCharsets.CLACK;
     }
 
-    private void doProgramAction(Consumer<Program> action, boolean debug) {
+    private void doProgramAction(Consumer<Program> action) {
         if (this.running.get()) {
             ClackSystem.printlnErr("A program is currently loaded! Press \"Force Stop\" to unload it.");
         } else {
@@ -248,7 +255,7 @@ public class ClackUI {
                 tokenizer.tokenize(text);
                 ProgramParser parser = new ProgramParser(tokenizer.finish());
                 try {
-                    Program program = new Program(parser.finish(), this.securityLevel.getValue(), debug);
+                    Program program = new Program(parser.finish(), this.securityLevel.getValue(), this.arguments.combine(new Arguments(this.flags.getText().trim().split(" "))));
                     this.programRef.set(program);
                     action.accept(program);
                     this.running.set(false);
@@ -291,7 +298,7 @@ public class ClackUI {
      */
     private void $$$setupUI$$$() {
         panel = new JPanel();
-        panel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -308,7 +315,7 @@ public class ClackUI {
         panel2.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel.add(panel3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel.add(panel3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -398,6 +405,11 @@ public class ClackUI {
         final JLabel label7 = new JLabel();
         label7.setText("Standard In");
         panel8.add(label7, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        flags = new JTextField();
+        panel.add(flags, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label8 = new JLabel();
+        label8.setText("Arguments");
+        panel.add(label8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

@@ -30,6 +30,7 @@ import com.gmail.socraticphoenix.clack.ast.SequenceNode;
 import com.gmail.socraticphoenix.clack.ast.SetVariableNode;
 import com.gmail.socraticphoenix.clack.ast.StackNode;
 import com.gmail.socraticphoenix.clack.ast.VariableNode;
+import com.gmail.socraticphoenix.clack.program.ClackRegistry;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
@@ -86,9 +87,8 @@ public class ProgramParser {
         switch (rbracket) {
             case SYNTAX_RPAREN:
                 break;
-            case SYNTAX_RBRACE:
-                break;
             case SYNTAX_RFLOOR:
+                res = ClackRegistry.instruction("Ẉ");
                 break;
             case SYNTAX_RCEIL:
                 break;

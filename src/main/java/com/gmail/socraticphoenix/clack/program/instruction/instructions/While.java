@@ -21,37 +21,18 @@
  */
 package com.gmail.socraticphoenix.clack.program.instruction.instructions;
 
+import com.gmail.socraticphoenix.clack.ast.SequenceNode;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.instruction.Argument;
 import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
-import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.nebula.collection.Items;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-public class Subtract implements Instruction {
-
-    public static Variable sub(Variable a, Variable b, Program program) {
-        if (a.get(BigDecimal.class).isPresent() && b.get(BigDecimal.class).isPresent()) {
-            return Variable.of(a.get(BigDecimal.class).get().subtract(b.get(BigDecimal.class).get(), program.mathContext()));
-        } else if (a.get(VariableList.class).isPresent() || b.get(VariableList.class).isPresent()) {
-            VariableList list = a.get(VariableList.class).orElseGet(() -> b.get(VariableList.class).get());
-            Variable other = a.get(VariableList.class).isPresent() ? b : a;
-            VariableList res = new VariableList(new ArrayList<>());
-            for (Variable var : list) {
-                res.add(Subtract.sub(var, other, program));
-            }
-            return Variable.of(res);
-        } else {
-            return Variable.of(a.val().toString().replaceAll(Pattern.quote(b.val().toString()), ""));
-        }
-    }
+public class While implements Instruction {
 
     @Override
     public int danger() {
@@ -60,12 +41,12 @@ public class Subtract implements Instruction {
 
     @Override
     public String name() {
-        return "_";
+        return "Ẉ";
     }
 
     @Override
     public String canonical() {
-        return "subtract";
+        return "while";
     }
 
     @Override
@@ -75,19 +56,20 @@ public class Subtract implements Instruction {
 
     @Override
     public List<Argument> arguments(Memory memory, Program program) {
-        return Items.buildList(Argument.any("a", "top value of the stack", "any type of value", false, true), Argument.any("b", "second value on the stack", "any type of value", false, true));
+        return Items.buildList(Argument.type("a", "top value of the stack", "sequence of instructions", false, true, SequenceNode.class));
     }
 
     @Override
     public void exec(Memory memory, Program program, Map<String, Variable> arguments) {
-        Variable a = arguments.get("a");
-        Variable b = arguments.get("b");
-        memory.push(Subtract.sub(a, b, program));
+        SequenceNode node = arguments.get("a").get(SequenceNode.class).get();
+        while(program.isRunning() && If.truthy(memory.pop())) {
+            node.exec(memory, program);
+        }
     }
 
     @Override
     public String operation() {
-        return "${a} - ${b} = ${res}";
+        return "while(${a})";
     }
 
 }

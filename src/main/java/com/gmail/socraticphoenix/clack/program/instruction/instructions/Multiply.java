@@ -72,8 +72,8 @@ public class Multiply implements Instruction {
             }
             return Variable.of(res);
         } else {
-            String as = a.get(String.class).get();
-            String bs = b.get(String.class).get();
+            String as = a.val().toString();
+            String bs = b.val().toString();
             StringBuilder res = new StringBuilder();
             for (char c : as.toCharArray()) {
                 if (bs.indexOf(c) != -1) {

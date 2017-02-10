@@ -53,13 +53,12 @@ public class Program {
     private StackMemory trans;
     private boolean running;
     private boolean errored;
-    private boolean debug;
-    private boolean debugFrozen;
     private FunctionMemory main;
     private int security;
     private Stack<Triple<Character, SequenceNode, FunctionMemory>> methodStack;
+    private Arguments arguments;
 
-    public Program(List<SequenceNode> functions, int security, boolean debug) {
+    public Program(List<SequenceNode> functions, int security, Arguments arguments) {
         if (functions.size() == 0 || functions.size() > 27) {
             throw new IllegalArgumentException("Functions must have nonzero length less than 28");
         }
@@ -73,8 +72,7 @@ public class Program {
         this.running = true;
         this.main = new FunctionMemory(this, this.trans);
         this.security = security;
-        this.debug = debug;
-        this.debugFrozen = debug;
+        this.arguments = arguments;
         this.methodStack = new Stack<>();
     }
 
@@ -175,6 +173,7 @@ public class Program {
         this.methodStack.push(Triple.of('$', function, functionMemory));
         function.exec(functionMemory, this);
         this.methodStack.pop();
+        this.terminate();
     }
 
     public Variable input(Predicate<Variable> form, String desc) {
@@ -185,8 +184,8 @@ public class Program {
         return MathContext.DECIMAL128;
     }
 
-    public void terminate(Arguments arguments) {
-        if (!arguments.hasFlag("-n") && !this.errored) {
+    public void terminate() {
+        if (!arguments.hasFlag("n") && !this.errored) {
             while (!this.main.current().isEmpty()) {
                 ClackSystem.printlnOut(this.main.pop().toString());
             }
@@ -197,13 +196,8 @@ public class Program {
         return this.functions.get(c);
     }
 
-    public void stepDebugger() {
-        this.debugFrozen = false;
-    }
-
     public void waitForGo() {
-        while (!this.running || this.debugFrozen) ;
-        this.debugFrozen = this.debug;
+        while (!this.running) ;
     }
 
     public void visit(Node node) {

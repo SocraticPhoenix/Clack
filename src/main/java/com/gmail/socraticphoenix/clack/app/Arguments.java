@@ -47,6 +47,15 @@ public class Arguments {
         }
     }
 
+    public Arguments combine(Arguments other) {
+        Arguments combined = new Arguments(new String[0]);
+        combined.args.addAll(this.args);
+        combined.args.addAll(other.args);
+        combined.flags.putAll(this.flags);
+        combined.flags.putAll(other.flags);
+        return combined;
+    }
+
     public List<String> getArgs() {
         return this.args;
     }

@@ -70,13 +70,13 @@ public class ClackMain {
             tokenizer.tokenize(prog);
             ProgramParser parser = new ProgramParser(tokenizer.finish());
             try {
-                Program program = new Program(parser.finish(), security, false);
+                Program program = new Program(parser.finish(), security, arguments);
                 for (int i = 0; i < arguments.getArgs().size(); i++) {
                     program.getTrans().push(Variable.parse(arguments.getArgs().get(i)));
                 }
                 System.out.println(program.getFunction('$').write());
                 program.run();
-                program.terminate(arguments);
+                program.terminate();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -88,7 +88,7 @@ public class ClackMain {
                 ClackSystem.printlnErr("Failed to load font!");
                 ClackSystem.printErr(e);
             }
-            ClackUI ui = new ClackUI();
+            ClackUI ui = new ClackUI(arguments);
             ClackSystem.setUI(ui);
             ui.display();
             ClackSystem.printOut("The ClackApp uses GNU Unifont Glyphs, an awesome free-to-use font that handles the entire unicode basic multilingual plane (65,536 characters). Check them out here: http://unifoundry.com/unifont.html");

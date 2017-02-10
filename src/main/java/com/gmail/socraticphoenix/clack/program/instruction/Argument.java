@@ -50,6 +50,10 @@ public class Argument {
         this(name, desc, type, false, true, test);
     }
 
+    public static Argument type(String name, String desc, String type, boolean prefersWell, boolean pops, Class... types) {
+        return new Argument(name, desc, type, prefersWell, pops, Argument.type(types));
+    }
+
     public static Argument of(String name, String desc, String type, boolean prefersWell, boolean pops, Predicate<Variable> test) {
         return new Argument(name, desc, type, prefersWell, pops, test);
     }
