@@ -31,28 +31,11 @@ import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.nebula.collection.Items;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class If implements Instruction {
-
-    public static boolean truthy(Variable var) {
-        if(var.get(BigDecimal.class).isPresent()) {
-            BigDecimal val = var.get(BigDecimal.class).get();
-            return val.compareTo(BigDecimal.ZERO) != 0;
-        } else if (var.get(String.class).isPresent()) {
-            String val = var.get(String.class).get();
-            return val.equalsIgnoreCase("true");
-        } else if (var.get(VariableList.class).isPresent()) {
-            VariableList list = var.get(VariableList.class).get();
-            return list.size() > 0;
-        } else if (var.get(SequenceNode.class).isPresent()) {
-            SequenceNode sequenceNode = var.get(SequenceNode.class).get();
-            return sequenceNode.getNodes().size() > 0;
-        } else {
-            return false;
-        }
-    }
+public class For implements Instruction {
 
     @Override
     public int danger() {
@@ -61,12 +44,12 @@ public class If implements Instruction {
 
     @Override
     public String name() {
-        return "Ị";
+        return "Ḟ";
     }
 
     @Override
     public String canonical() {
-        return "if";
+        return "for";
     }
 
     @Override
@@ -76,20 +59,48 @@ public class If implements Instruction {
 
     @Override
     public List<Argument> arguments(Memory memory, Program program) {
-        return Items.buildList(Argument.type("a", "top of stack", "instruction sequence", false, true, SequenceNode.class), Argument.any("b", "second value on the stack", "any type of value", false, true));
+        return Items.buildList(Argument.type("a", "top value of the stack", "instruction sequence", false, true, SequenceNode.class), Argument.type("b", "second value on the stack", "number, string, or list", false, true, BigDecimal.class, String.class, VariableList.class));
     }
 
     @Override
     public void exec(Memory memory, Program program, Map<String, Variable> arguments) {
         SequenceNode node = arguments.get("a").get(SequenceNode.class).get();
-        if(If.truthy(arguments.get("b"))) {
-            node.exec(memory, program);
+        Variable a = arguments.get("b");
+        if (a.get(BigDecimal.class).isPresent()) {
+            BigDecimal decimal = a.get(BigDecimal.class).get();
+            while (program.isRunning()) {
+                if (decimal.compareTo(BigDecimal.ZERO) < 0) {
+                    break;
+                }
+                node.exec(memory, program);
+                decimal = decimal.subtract(BigDecimal.ONE);
+            }
+        } else {
+            VariableList list;
+            if (a.get(VariableList.class).isPresent()) {
+                list = a.get(VariableList.class).get();
+            } else {
+                String string = a.val().toString();
+                List<Variable> chars = new ArrayList<>();
+                string.codePoints().forEach(i -> chars.add(Variable.of(new String(new int[]{i}, 0, 1))));
+                list = new VariableList(chars);
+            }
+            int index = 0;
+            while (program.isRunning()) {
+                if (index >= list.size()) {
+                    break;
+                }
+                Variable var = list.get(index);
+                memory.push(var);
+                node.exec(memory, program);
+                index++;
+            }
         }
     }
 
     @Override
     public String operation() {
-        return "if(${a})";
+        return null;
     }
 
 }

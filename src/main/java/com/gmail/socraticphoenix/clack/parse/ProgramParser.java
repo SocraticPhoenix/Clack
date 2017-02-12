@@ -86,11 +86,13 @@ public class ProgramParser {
         Instruction res = null;
         switch (rbracket) {
             case SYNTAX_RPAREN:
+                res = ClackRegistry.instruction("Ị");
                 break;
             case SYNTAX_RFLOOR:
                 res = ClackRegistry.instruction("Ẉ");
                 break;
             case SYNTAX_RCEIL:
+                res = ClackRegistry.instruction("Ḟ");
                 break;
         }
         return Optional.ofNullable(res);

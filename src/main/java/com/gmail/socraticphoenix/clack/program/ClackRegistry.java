@@ -23,8 +23,14 @@ package com.gmail.socraticphoenix.clack.program;
 
 import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Add;
+import com.gmail.socraticphoenix.clack.program.instruction.instructions.BooleanNegate;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Divide;
+import com.gmail.socraticphoenix.clack.program.instruction.instructions.Duplicate;
+import com.gmail.socraticphoenix.clack.program.instruction.instructions.For;
+import com.gmail.socraticphoenix.clack.program.instruction.instructions.If;
+import com.gmail.socraticphoenix.clack.program.instruction.instructions.Input;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Multiply;
+import com.gmail.socraticphoenix.clack.program.instruction.instructions.Negate;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Print;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.PrintLine;
 import com.gmail.socraticphoenix.clack.program.instruction.instructions.Subtract;
@@ -53,6 +59,12 @@ public class ClackRegistry {
         r(new Print());
         r(new PrintLine());
         r(new While());
+        r(new If());
+        r(new For());
+        r(new Negate());
+        r(new BooleanNegate());
+        r(new Input());
+        r(new Duplicate());
 
         r(new Constant("Π", "pi", new BigDecimal("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679")));
     }
@@ -74,10 +86,16 @@ public class ClackRegistry {
     }
 
     public static void register(Instruction instruction) {
+        if(ClackRegistry.hasInstruction(instruction.name())) {
+            throw new IllegalArgumentException("Duplicate instruction name: " + instruction.name() + " (canonical: " + instruction.canonical() + ")");
+        }
         ClackRegistry.instructions.put(instruction.name(), instruction);
     }
 
     public static void register(Constant constant) {
+        if(ClackRegistry.hasConstant(constant.getName())) {
+            throw new IllegalArgumentException("Duplicate constant name: " + constant.getName() + " (canonical: " + constant.getCanonical() + ")");
+        }
         ClackRegistry.constants.put(constant.getName(), constant);
     }
 

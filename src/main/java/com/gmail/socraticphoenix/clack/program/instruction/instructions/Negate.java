@@ -21,38 +21,18 @@
  */
 package com.gmail.socraticphoenix.clack.program.instruction.instructions;
 
-import com.gmail.socraticphoenix.clack.ast.SequenceNode;
 import com.gmail.socraticphoenix.clack.program.Program;
 import com.gmail.socraticphoenix.clack.program.instruction.Argument;
 import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
 import com.gmail.socraticphoenix.clack.program.memory.Memory;
 import com.gmail.socraticphoenix.clack.program.memory.Variable;
-import com.gmail.socraticphoenix.clack.program.memory.VariableList;
 import com.gmail.socraticphoenix.nebula.collection.Items;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-public class If implements Instruction {
-
-    public static boolean truthy(Variable var) {
-        if(var.get(BigDecimal.class).isPresent()) {
-            BigDecimal val = var.get(BigDecimal.class).get();
-            return val.compareTo(BigDecimal.ZERO) != 0;
-        } else if (var.get(String.class).isPresent()) {
-            String val = var.get(String.class).get();
-            return val.equalsIgnoreCase("true");
-        } else if (var.get(VariableList.class).isPresent()) {
-            VariableList list = var.get(VariableList.class).get();
-            return list.size() > 0;
-        } else if (var.get(SequenceNode.class).isPresent()) {
-            SequenceNode sequenceNode = var.get(SequenceNode.class).get();
-            return sequenceNode.getNodes().size() > 0;
-        } else {
-            return false;
-        }
-    }
+public class Negate implements Instruction {
 
     @Override
     public int danger() {
@@ -61,12 +41,12 @@ public class If implements Instruction {
 
     @Override
     public String name() {
-        return "Ị";
+        return "Ṅ";
     }
 
     @Override
     public String canonical() {
-        return "if";
+        return "negate";
     }
 
     @Override
@@ -76,20 +56,18 @@ public class If implements Instruction {
 
     @Override
     public List<Argument> arguments(Memory memory, Program program) {
-        return Items.buildList(Argument.type("a", "top of stack", "instruction sequence", false, true, SequenceNode.class), Argument.any("b", "second value on the stack", "any type of value", false, true));
+        return Items.buildList(Argument.type("a", "top value of the stack", "number", false, true, BigDecimal.class));
     }
 
     @Override
     public void exec(Memory memory, Program program, Map<String, Variable> arguments) {
-        SequenceNode node = arguments.get("a").get(SequenceNode.class).get();
-        if(If.truthy(arguments.get("b"))) {
-            node.exec(memory, program);
-        }
+        BigDecimal decimal = arguments.get("a").get(BigDecimal.class).get();
+        memory.push(Variable.of(decimal.negate()));
     }
 
     @Override
     public String operation() {
-        return "if(${a})";
+        return "!${a}";
     }
 
 }

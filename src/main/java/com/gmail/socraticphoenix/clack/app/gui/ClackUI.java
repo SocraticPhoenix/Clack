@@ -151,12 +151,6 @@ public class ClackUI {
             if (chosen == JFileChooser.APPROVE_OPTION) {
                 File file = this.chooser.getSelectedFile();
                 this.file.setText(file.getAbsolutePath());
-                try {
-                    String newText = Strings.glue("\n", Files.readAllLines(file.toPath()));
-                    this.program.setText(newText);
-                } catch (IOException e) {
-                    ClackSystem.printErr(e);
-                }
             }
         });
 

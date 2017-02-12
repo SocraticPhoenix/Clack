@@ -19,56 +19,53 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.clack.program.memory;
+package com.gmail.socraticphoenix.clack.program.instruction.instructions;
 
-import com.gmail.socraticphoenix.clack.parse.TokenGroups;
+import com.gmail.socraticphoenix.clack.program.Program;
+import com.gmail.socraticphoenix.clack.program.instruction.Argument;
+import com.gmail.socraticphoenix.clack.program.instruction.Instruction;
+import com.gmail.socraticphoenix.clack.program.memory.Memory;
+import com.gmail.socraticphoenix.clack.program.memory.Variable;
+import com.gmail.socraticphoenix.nebula.collection.Items;
 
-import java.util.Stack;
+import java.util.List;
+import java.util.Map;
 
-public interface Memory {
+public class Input implements Instruction {
 
-    static boolean isStackId(char c) {
-        return TokenGroups.STACKS.indexOf(c) != -1;
+    @Override
+    public int danger() {
+        return 0;
     }
 
-    static boolean isVariableId(char c) {
-        return TokenGroups.VARIABLES.indexOf(c) != -1;
+    @Override
+    public String name() {
+        return "İ";
     }
 
-    static int getStackIndex(char c) {
-        return TokenGroups.STACKS.indexOf(c);
+    @Override
+    public String canonical() {
+        return "input";
     }
 
-    static int getVariableIndex(char c) {
-        return TokenGroups.VARIABLES.indexOf(c);
+    @Override
+    public String doc() {
+        return "";
     }
 
-    Stack<Variable> current();
-
-    Variable[] variables();
-
-    Variable popWellValue();
-
-    Variable peekWellValue();
-
-    Variable get(int index);
-
-    void set(int index, Object var);
-
-    boolean isPresent(int index);
-
-    void setStack(int index);
-
-    default Variable pop() {
-        return this.current().isEmpty() ? this.popWellValue() : this.current().pop();
+    @Override
+    public List<Argument> arguments(Memory memory, Program program) {
+        return Items.buildList();
     }
 
-    default void push(Variable variable) {
-        this.current().push(variable);
+    @Override
+    public void exec(Memory memory, Program program, Map<String, Variable> arguments) {
+        program.input(v -> true, "any type of value");
     }
 
-   default Variable peek() {
-        return this.current().isEmpty() ? this.peekWellValue() : this.current().peek();
-   }
+    @Override
+    public String operation() {
+        return "input()";
+    }
 
 }

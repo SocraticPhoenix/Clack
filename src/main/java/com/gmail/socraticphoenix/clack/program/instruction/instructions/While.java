@@ -56,7 +56,7 @@ public class While implements Instruction {
 
     @Override
     public List<Argument> arguments(Memory memory, Program program) {
-        return Items.buildList(Argument.type("a", "top value of the stack", "sequence of instructions", false, true, SequenceNode.class));
+        return Items.buildList(Argument.type("a", "top value of the stack", "instruction sequence", false, true, SequenceNode.class));
     }
 
     @Override
