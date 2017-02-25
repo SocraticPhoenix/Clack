@@ -20,18 +20,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import com.gmail.socraticphoenix.clack.parse.ParseException;
-import com.gmail.socraticphoenix.clack.parse.TokenGroups;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class QuickTest {
 
-    public static void main(String[] args) throws ParseException {
-        System.out.println((TokenGroups.VARIABLES + TokenGroups.CONSTANTS).codePoints().toArray().length);
-        System.out.println((TokenGroups.STACKS + TokenGroups.FUNCTIONS).codePoints().toArray().length);
-        System.out.println(TokenGroups.SYNTAX.codePoints().toArray().length);
-        System.out.println("ẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻ".codePoints().toArray().length);
-        System.out.println("ạḅḍẹḥịḳḷṃṇọṛṣṭụṿẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż".codePoints().toArray().length);
-        System.out.println("!@&*_+/%^?~`<>'₢€£￦￥¥₳฿￠₡¢₢₵₫￡Ł|".codePoints().toArray().length);
+    public static void main(String[] args) throws IOException {
+        File file = new File("src/main/java/com/gmail/socraticphoenix/clack");
+        StringBuilder builder = new StringBuilder();
+        QuickTest.recursiveRead(file, builder);
+        FileWriter writer = new FileWriter("program_code.txt");
+        writer.write(builder.toString());
+        writer.close();
+    }
+
+    public static void recursiveRead(File file, StringBuilder builder) throws IOException {
+        for(File sub : file.listFiles()) {
+            if(!sub.isDirectory() && sub.getAbsolutePath().endsWith(".java")) {
+                builder.append("----------------------- START FILE -----------------------").append(System.lineSeparator()).append(QuickTest.readAllText(sub)).append("----------------------- END FILE -----------------------").append(System.lineSeparator());
+            }
+        }
+
+        for(File sub : file.listFiles()) {
+            if(sub.isDirectory()) {
+                recursiveRead(sub, builder);
+            }
+        }
+    }
+
+    public static String readAllText(File file) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        int c;
+        while ((c = reader.read()) != -1) {
+            builder.appendCodePoint(c);
+        }
+        return builder.toString();
     }
 
 }

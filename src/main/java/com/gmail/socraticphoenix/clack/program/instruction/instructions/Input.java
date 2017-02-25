@@ -60,7 +60,7 @@ public class Input implements Instruction {
 
     @Override
     public void exec(Memory memory, Program program, Map<String, Variable> arguments) {
-        program.input(v -> true, "any type of value");
+        memory.push(program.input(v -> true, "any type of value"));
     }
 
     @Override
